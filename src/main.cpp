@@ -48,9 +48,12 @@ EasyButton modeBtn(BTN_PIN);
 #define ANALOG_VU_METER_LEFT_PIN 25
 #define ANALOG_VU_METER_RIGHT_PIN 26
 #define VU_PEAK_SCALAR 1.2
-int vuPeak = 0;
-#define deckLedCount 2
+#define VU_MAX 160
+
+// RGB LEDs on deck
+#define deckLedCount 5
 #define DECK_LED_PIN 27
+int activeDeckLed = 0;
 
 CRGB vuLeds[deckLedCount];
 
@@ -275,41 +278,70 @@ void updateBarVuMeter()
 void updateAnalogVuMeter()
 {
   // Update analog vu meter. Average the peaks and map the output to the meter
-  vuPeak = 0;
+  int vuPeak = 0;
   for (byte band = 0; band < NUM_BANDS; band++)
     vuPeak += oldBarHeights[band];
   vuPeak = (vuPeak / NUM_BANDS) * VU_PEAK_SCALAR;
-  int vUnits = map(vuPeak, 0, kMatrixHeight, 0, 255);
-  analogWrite(ANALOG_VU_METER_LEFT_PIN, vUnits);
+  int vuUnits = map(vuPeak, 0, kMatrixHeight, 0, 255);
+  // Limit the output to protect the analog VU meters
+  vuUnits = min(vuUnits, VU_MAX);
+  analogWrite(ANALOG_VU_METER_LEFT_PIN, vuUnits);
+  analogWrite(ANALOG_VU_METER_RIGHT_PIN, vuUnits);
 
+  // Update the desk leds    
   switch (buttonPushCounter)
   {
   case 0:
-    vuLeds[0] = CHSV(vUnits, 255, 255);
-    vuLeds[1] = CHSV(vUnits, 255, 255);
+    vuLeds[0] = CHSV(vuUnits, 255, 255);
+    vuLeds[1] = CHSV(vuUnits, 255, 255);
+    vuLeds[2] = CHSV(vuUnits, 255, 255);
+    vuLeds[3] = CHSV(vuUnits, 255, 255);
+    vuLeds[4] = CHSV(vuUnits, 255, 255);
     break;
   case 1:
-    vuLeds[0] = ColorFromPalette(outrunPal, vUnits);
-    vuLeds[1] = ColorFromPalette(outrunPal, vUnits);
-
+    vuLeds[0] = ColorFromPalette(outrunPal, vuUnits);
+    vuLeds[1] = ColorFromPalette(outrunPal, vuUnits);
+    vuLeds[2] = ColorFromPalette(outrunPal, vuUnits);
+    vuLeds[3] = ColorFromPalette(outrunPal, vuUnits);
+    vuLeds[4] = ColorFromPalette(outrunPal, vuUnits);
     break;
   case 2:
-    vuLeds[0] = ColorFromPalette(purplePal, vUnits);
-    vuLeds[1] = ColorFromPalette(purplePal, vUnits);
+    vuLeds[0] = ColorFromPalette(purplePal, vuUnits);
+    vuLeds[1] = ColorFromPalette(purplePal, vuUnits);
+    vuLeds[2] = ColorFromPalette(purplePal, vuUnits);
+    vuLeds[3] = ColorFromPalette(purplePal, vuUnits);
+    vuLeds[4] = ColorFromPalette(purplePal, vuUnits);
     break;
   case 3:
-    vuLeds[0] = ColorFromPalette(heatPal, vUnits);
-    vuLeds[1] = ColorFromPalette(heatPal, vUnits);
+    vuLeds[0] = ColorFromPalette(heatPal, vuUnits);
+    vuLeds[1] = ColorFromPalette(heatPal, vuUnits);
+    vuLeds[2] = ColorFromPalette(heatPal, vuUnits);
+    vuLeds[3] = ColorFromPalette(heatPal, vuUnits);
+    vuLeds[4] = ColorFromPalette(heatPal, vuUnits);
     break;
   case 4:
-    vuLeds[0] = CHSV(vUnits, 255, 255);
-    vuLeds[1] = CHSV(vUnits, 255, 255);
+    vuLeds[0] = CHSV(vuUnits, 255, 255);
+    vuLeds[1] = CHSV(vuUnits, 255, 255);
+    vuLeds[2] = CHSV(vuUnits, 255, 255);
+    vuLeds[3] = CHSV(vuUnits, 255, 255);
+    vuLeds[4] = CHSV(vuUnits, 255, 255);
     break;
   case 5:
-    vuLeds[0] = CHSV(vUnits, 255, 255);
-    vuLeds[1] = CHSV(vUnits, 255, 255);
+    vuLeds[0] = CHSV(vuUnits, 255, 255);
+    vuLeds[1] = CHSV(vuUnits, 255, 255);
+    vuLeds[2] = CHSV(vuUnits, 255, 255);
+    vuLeds[3] = CHSV(vuUnits, 255, 255);
+    vuLeds[4] = CHSV(vuUnits, 255, 255);
     break;
   }
+
+  EVERY_N_MILLISECONDS(500)
+  {
+    activeDeckLed = (activeDeckLed + 1) % 3;
+  }
+  
+  // Draw the active deck led as white
+  vuLeds[activeDeckLed] = CRGB::White;
 }
 
 void changeMode()
