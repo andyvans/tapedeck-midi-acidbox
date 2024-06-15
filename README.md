@@ -1,4 +1,4 @@
-# VU Meter with 8x8 RGB graphics
+# 1971 Technics tape deck with machine generated music & RGB graphics
 
 ## In progress...
 
