@@ -13,8 +13,8 @@
 #define LED_PIN 5                                  // LED strip data
 #define COLOR_ORDER GRB                            // If colours look wrong, play with this
 #define CHIPSET WS2812B                            // LED strip type
-#define MAX_MILLIAMPS 1000                         // Careful with the amount of power here if running off USB port
-const int BRIGHTNESS_SETTINGS[3] = {5, 70, 200};   // 3 Integer array for 3 brightness settings (based on pressing+holding BTN_PIN)
+#define MAX_MILLIAMPS 700                          // Careful with the amount of power here if running off USB port
+const int BRIGHTNESS_SETTINGS[3] = {5, 30, 70};    // 3 Integer array for 3 brightness settings (based on pressing+holding BTN_PIN)
 #define LED_VOLTS 5                                // Usually 5 or 12
 #define NUM_BANDS 4                                // To change this, you will need to change the bunch of if statements describing the mapping from bins to bands
 #define NOISE 500                                  // Used as a crude noise filter, values below this are ignored
@@ -48,7 +48,7 @@ EasyButton modeBtn(BTN_PIN);
 #define ANALOG_VU_METER_LEFT_PIN 25
 #define ANALOG_VU_METER_RIGHT_PIN 26
 #define VU_PEAK_SCALAR 1.2
-#define VU_MAX 160
+#define VU_MAX 170
 
 // RGB LEDs on deck
 #define deckLedCount 5
