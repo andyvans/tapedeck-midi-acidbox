@@ -7,7 +7,7 @@
 #define AUDIO_IN_PIN 35                            // Signal in on this pin
 #define SAMPLES 1024                               // Must be a power of 2
 #define SAMPLING_FREQ 40000                        // Hz, must be 40000 or less due to ADC conversion time. Determines maximum frequency that can be analysed by the FFT Fmax=sampleF/2.
-#define AMPLITUDE 15000                            // Depending on your audio source level, you may need to alter this value. Can be used as a 'sensitivity' control.
+#define AMPLITUDE 27000                            // Depending on your audio source level, you may need to alter this value. Can be used as a 'sensitivity' control.
 
 // LED matrix
 #define LED_PIN 5                                  // LED strip data
@@ -47,7 +47,7 @@ EasyButton modeBtn(BTN_PIN);
 // Analog vu meter variables
 #define ANALOG_VU_METER_LEFT_PIN 25
 #define ANALOG_VU_METER_RIGHT_PIN 26
-#define VU_PEAK_SCALAR 1.2
+#define VU_PEAK_SCALAR 1.4
 #define VU_MAX 170
 
 // RGB LEDs on deck
@@ -199,7 +199,7 @@ void analyseAudio()
       if (i > 27 && i <= 55)
         bandValues[2] += (int)vReal[i];
       if (i > 55 && i <= 255)
-        bandValues[3] += (int)vReal[i]*0.8;
+        bandValues[3] += (int)vReal[i]*0.5;
     }
   }
 }
@@ -278,15 +278,18 @@ void updateBarVuMeter()
 void updateAnalogVuMeter()
 {
   // Update analog vu meter. Average the peaks and map the output to the meter
+  // Exclude the highest band as it's usually too high
   int vuPeak = 0;
-  for (byte band = 0; band < NUM_BANDS; band++)
+  for (byte band = 0; band < NUM_BANDS-1; band++)
     vuPeak += oldBarHeights[band];
   vuPeak = (vuPeak / NUM_BANDS) * VU_PEAK_SCALAR;
   int vuUnits = map(vuPeak, 0, kMatrixHeight, 0, 255);
   // Limit the output to protect the analog VU meters
   vuUnits = min(vuUnits, VU_MAX);
-  analogWrite(ANALOG_VU_METER_LEFT_PIN, vuUnits);
-  analogWrite(ANALOG_VU_METER_RIGHT_PIN, vuUnits);
+  // get random variance between 0.9 and 1.1 to simulate left vs right channel
+  float variance = random(90, 110) / 100.0;
+  analogWrite(ANALOG_VU_METER_LEFT_PIN, vuUnits * variance);
+  analogWrite(ANALOG_VU_METER_RIGHT_PIN, vuUnits / variance);
 
   // Update the desk leds    
   switch (buttonPushCounter)
