@@ -4,13 +4,13 @@
 #include <EasyButton.h>
 
 // Audio constants
-#define AUDIO_IN_PIN 35                            // Signal in on this pin
+#define AUDIO_IN_PIN 1                            // Signal in on this pin
 #define SAMPLES 1024                               // Must be a power of 2
 #define SAMPLING_FREQ 40000                        // Hz, must be 40000 or less due to ADC conversion time. Determines maximum frequency that can be analysed by the FFT Fmax=sampleF/2.
 #define AMPLITUDE 27000                            // Depending on your audio source level, you may need to alter this value. Can be used as a 'sensitivity' control.
 
 // LED matrix
-#define LED_PIN 5                                  // LED strip data
+#define LED_PIN 4                                  // LED strip data
 #define COLOR_ORDER GRB                            // If colours look wrong, play with this
 #define CHIPSET WS2812B                            // LED strip type
 #define MAX_MILLIAMPS 700                          // Careful with the amount of power here if running off USB port
@@ -26,7 +26,7 @@ const uint8_t kMatrixHeight = 12;                   // Matrix height
 #define SERPENTINE true                            // Set to false if you're LEDS are connected end to end, true if serpentine
 
 // Button
-#define BTN_PIN 4                                  // Connect a push button to this pin to change patterns
+#define BTN_PIN 46                                  // Connect a push button to this pin to change patterns
 #define LONG_PRESS_MS 200                          // Number of ms to count as a long press
 
 // FFT audio processing
@@ -45,14 +45,14 @@ bool autoChangePatterns = false;
 EasyButton modeBtn(BTN_PIN);
 
 // Analog vu meter variables
-#define ANALOG_VU_METER_LEFT_PIN 25
-#define ANALOG_VU_METER_RIGHT_PIN 26
+#define ANALOG_VU_METER_LEFT_PIN 6
+#define ANALOG_VU_METER_RIGHT_PIN 7
 #define VU_PEAK_SCALAR 1.4
 #define VU_MAX 170
 
 // RGB LEDs on deck
 #define deckLedCount 5
-#define DECK_LED_PIN 27
+#define DECK_LED_PIN 5
 int activeDeckLed = 0;
 
 CRGB vuLeds[deckLedCount];
