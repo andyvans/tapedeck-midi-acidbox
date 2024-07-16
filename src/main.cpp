@@ -1,17 +1,14 @@
-#include <devices.h>
+#include <Arduino.h>
 #include <arduinoFFT.h>
-#include <EasyButton.h>
-#include <FastLED_NeoMatrix.h>
-#include "LedManager.h"
+#include "devices.h"
+#include "DeckLight.h"
 
 // Audio constants
 #define SAMPLES 1024                               // Must be a power of 2
 #define SAMPLING_FREQ 40000                        // Hz, must be 40000 or less due to ADC conversion time. Determines maximum frequency that can be analysed by the FFT Fmax=sampleF/2.
 #define AMPLITUDE 27000                            // Depending on your audio source level, you may need to alter this value. Can be used as a 'sensitivity' control.
-
-
-// Button
-#define LONG_PRESS_MS 200                          // Number of ms to count as a long press
+#define NUM_BANDS 4                                // To change this, you will need to change the bunch of if statements describing the mapping from bins to bands
+#define NOISE 500                                  // Used as a crude noise filter, values below this are ignored
 
 // FFT audio processing
 unsigned int sampling_period_us;
@@ -23,33 +20,20 @@ float vImag[SAMPLES];
 unsigned long newTime;
 ArduinoFFT<float> FFT = ArduinoFFT<float>(vReal, vImag, SAMPLES, SAMPLING_FREQ);
 
-// Button variables
+DeckLight deckLight;
 
-EasyButton modeBtn(THEME_BUTTON_PIN);
-LedManager ledManager;
-
-
-
+void analyseAudio();
 
 void setup()
 {
-  Serial.begin(115200);
-  
-  
-  modeBtn.begin();
-  modeBtn.onPressed([]() { ledManager.changeMode(); });
-  modeBtn.onPressedFor(LONG_PRESS_MS, ledManager.brightnessButton);
-  modeBtn.onSequence(3, 2000, ledManager.startAutoMode);
-  modeBtn.onSequence(5, 2000, ledManager.brightnessOff);
+  Serial.begin(115200);  
+   
   sampling_period_us = round(1000000 * (1.0 / SAMPLING_FREQ));
 }
 
 void loop()
 {
-  // Don't clear screen if waterfall pattern, be sure to change this is you change the patterns / order
-  if (buttonPushCounter != 5) FastLED.clear();
-
-  modeBtn.read();
+  deckLight.tick();
 
   // Sample the audio pin
   for (int i = 0; i < SAMPLES; i++)
@@ -64,32 +48,7 @@ void loop()
   }
 
   analyseAudio();
-  updateBarVuMeter();
-  updateAnalogVuMeter();
-
-  // Decay peak
-  EVERY_N_MILLISECONDS(60)
-  {
-    for (byte band = 0; band < NUM_BANDS; band++)
-    {
-      if (peak[band] > 0) peak[band] -= 1;
-    }
-    colorTimer++;
-  }
-
-  // Used in some of the patterns
-  EVERY_N_MILLISECONDS(10)
-  {
-    colorTimer++;
-  }
-
-  EVERY_N_SECONDS(10)
-  {
-    if (autoChangePatterns)
-      buttonPushCounter = (buttonPushCounter + 1) % 6;
-  }
-
-  FastLED.show();
+  deckLight.displayAudio(bandValues);
 }
 
 void analyseAudio()

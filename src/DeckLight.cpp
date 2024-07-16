@@ -1,19 +1,17 @@
-#include "devices.h"
 #include <Arduino.h>
-#include <arduinoFFT.h>
 #include <FastLED_NeoMatrix.h>
-#include "LedManager.h"
+#include "DeckLight.h"
 
 // LED matrix
-#define COLOR_ORDER GRB                            // If colours look wrong, play with this
-#define CHIPSET WS2812B                            // LED strip type
-#define MAX_MILLIAMPS 700                          // Careful with the amount of power here if running off USB port
-const int BRIGHTNESS_SETTINGS[3] = {5, 30, 70};    // 3 Integer array for 3 brightness settings (based on pressing+holding BTN_PIN)
-#define LED_VOLTS 5                                // Usually 5 or 12
-#define NUM_BANDS 4                                // To change this, you will need to change the bunch of if statements describing the mapping from bins to bands
-#define NOISE 500                                  // Used as a crude noise filter, values below this are ignored
+#define COLOR_ORDER GRB                         // If colours look wrong, play with this
+#define CHIPSET WS2812B                         // LED strip type
+#define MAX_MILLIAMPS 700                       // Careful with the amount of power here if running off USB port
+const int BRIGHTNESS_SETTINGS[3] = {5, 30, 70}; // 3 Integer array for 3 brightness settings (based on pressing+holding BTN_PIN)
+#define LED_VOLTS 5                             // Usually 5 or 12
+#define NUM_BANDS 4                             // Number of bands to display
+
 const uint8_t kMatrixWidth = 4;                    // Matrix width
-const uint8_t kMatrixHeight = 12;                   // Matrix height
+const uint8_t kMatrixHeight = 12;                  // Matrix height
 #define NUM_LEDS (kMatrixWidth * kMatrixHeight)    // Total number of LEDs
 #define BAR_WIDTH (kMatrixWidth / (NUM_BANDS - 1)) // If width >= 8 light 1 LED width per bar, >= 16 light 2 LEDs width bar etc
 #define TOP (kMatrixHeight - 0)                    // Don't allow the bars to go offscreen
@@ -54,10 +52,10 @@ uint8_t colorTimer = 0;
 
 // FastLED_NeoMatrix - see https://github.com/marcmerlin/FastLED_NeoMatrix
 FastLED_NeoMatrix *matrix = new FastLED_NeoMatrix(
-  leds, kMatrixWidth, kMatrixHeight,
-  NEO_MATRIX_TOP  + NEO_MATRIX_LEFT +
-  NEO_MATRIX_ROWS + NEO_MATRIX_ZIGZAG +
-  NEO_TILE_TOP    + NEO_TILE_LEFT + NEO_TILE_ROWS);
+    leds, kMatrixWidth, kMatrixHeight,
+    NEO_MATRIX_TOP + NEO_MATRIX_LEFT +
+        NEO_MATRIX_ROWS + NEO_MATRIX_ZIGZAG +
+        NEO_TILE_TOP + NEO_TILE_LEFT + NEO_TILE_ROWS);
 
 int oldBarHeights[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 int bandValues[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -67,9 +65,18 @@ byte peak[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // The length of
 #define VU_PEAK_SCALAR 1.4
 #define VU_MAX 170
 
-void LedManager::setup()
+DeckLight::DeckLight()
 {
-  
+  modeBtn = new OneButton(THEME_BUTTON_PIN);
+  themeIndex = 0;
+  autoChangePatterns = false;
+}
+
+void DeckLight::setup()
+{  
+  modeBtn->attachClick(changeTheme);
+  modeBtn->attachDoubleClick(changeBrightness);
+  modeBtn->attachLongPressStart(startAutoMode);
 
   // Setup LED matrix
   FastLED.addLeds<CHIPSET, LED_MATRIX_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalSMD5050);
@@ -78,11 +85,53 @@ void LedManager::setup()
   FastLED.clear();
 
   // Setup deck LEDs
-  FastLED.addLeds<CHIPSET, DECK_LED_PIN, COLOR_ORDER>(vuLeds , deckLedCount).setCorrection(TypicalSMD5050);
+  FastLED.addLeds<CHIPSET, DECK_LED_PIN, COLOR_ORDER>(vuLeds, deckLedCount).setCorrection(TypicalSMD5050);
 }
 
+void DeckLight::tick()
+{
+  modeBtn->tick();
+}
 
-void LedManager::updateBarVuMeter(int bandValues[])
+void DeckLight::displayAudio(int bandValues[])
+{
+  // Don't clear screen if waterfall pattern
+  if (themeIndex != 5)
+    FastLED.clear();
+
+  // Update the bar vu meter
+  updateBarVuMeter(bandValues);
+
+  // Update the analog vu meter
+  updateAnalogVuMeter();
+
+  // Decay peak
+  EVERY_N_MILLISECONDS(60)
+  {
+    for (byte band = 0; band < NUM_BANDS; band++)
+    {
+      if (peak[band] > 0)
+        peak[band] -= 1;
+    }
+    colorTimer++;
+  }
+
+  // Used in some of the patterns
+  EVERY_N_MILLISECONDS(10)
+  {
+    colorTimer++;
+  }
+
+  EVERY_N_SECONDS(10)
+  {
+    if (autoChangePatterns)
+      themeIndex = (themeIndex + 1) % 6;
+  }
+
+  FastLED.show();
+}
+
+void DeckLight::updateBarVuMeter(int bandValues[])
 {
   // Process the FFT data into bar heights
   for (byte band = 0; band < NUM_BANDS; band++)
@@ -153,23 +202,28 @@ void LedManager::updateBarVuMeter(int bandValues[])
   }
 }
 
-void LedManager::updateAnalogVuMeter()
+void DeckLight::updateAnalogVuMeter()
 {
   // Update analog vu meter. Average the peaks and map the output to the meter
   // Exclude the highest band as it's usually too high
   int vuPeak = 0;
-  for (byte band = 0; band < NUM_BANDS-1; band++)
+  for (byte band = 0; band < NUM_BANDS - 1; band++)
+  {
     vuPeak += oldBarHeights[band];
+  }
+
   vuPeak = (vuPeak / NUM_BANDS) * VU_PEAK_SCALAR;
   int vuUnits = map(vuPeak, 0, kMatrixHeight, 0, 255);
+
   // Limit the output to protect the analog VU meters
   vuUnits = min(vuUnits, VU_MAX);
+
   // get random variance between 0.9 and 1.1 to simulate left vs right channel
   float variance = random(90, 110) / 100.0;
   analogWrite(ANALOG_VU_METER_LEFT_PIN, vuUnits * variance);
   analogWrite(ANALOG_VU_METER_RIGHT_PIN, vuUnits / variance);
 
-  // Update the desk leds    
+  // Update the desk leds
   switch (themeIndex)
   {
   case 0:
@@ -220,12 +274,12 @@ void LedManager::updateAnalogVuMeter()
   {
     activeDeckLed = (activeDeckLed + 1) % 3;
   }
-  
+
   // Draw the active deck led as white
   vuLeds[activeDeckLed] = CRGB::White;
 }
 
-void LedManager::changeTheme()
+void DeckLight::changeTheme()
 {
   if (FastLED.getBrightness() == 0)
     FastLED.setBrightness(BRIGHTNESS_SETTINGS[0]); // Re-enable if lights are "off"
@@ -233,12 +287,12 @@ void LedManager::changeTheme()
   themeIndex = (themeIndex + 1) % 6;
 }
 
-void LedManager::startAutoMode()
+void DeckLight::startAutoMode()
 {
   autoChangePatterns = true;
 }
 
-void LedManager::changeBrightness()
+void DeckLight::changeBrightness()
 {
   if (FastLED.getBrightness() == BRIGHTNESS_SETTINGS[2])
     FastLED.setBrightness(BRIGHTNESS_SETTINGS[0]);
@@ -250,80 +304,102 @@ void LedManager::changeBrightness()
     FastLED.setBrightness(BRIGHTNESS_SETTINGS[0]); // Re-enable if lights are "off"
 }
 
-void LedManager::brightnessOff()
+void DeckLight::brightnessOff()
 {
   FastLED.setBrightness(0); // Lights out
 }
 
 // Patterns
-void LedManager::rainbowBars(int band, int barHeight) {
+void DeckLight::rainbowBars(int band, int barHeight)
+{
   int xStart = BAR_WIDTH * band;
-  for (int x = xStart; x < xStart + BAR_WIDTH; x++) {
-    for (int y = TOP; y >= TOP - barHeight; y--) {
+  for (int x = xStart; x < xStart + BAR_WIDTH; x++)
+  {
+    for (int y = TOP; y >= TOP - barHeight; y--)
+    {
       matrix->drawPixel(x, y, CHSV((x / BAR_WIDTH) * (255 / NUM_BANDS), 255, 255));
     }
   }
 }
 
-void LedManager::purpleBars(int band, int barHeight) {
+void DeckLight::purpleBars(int band, int barHeight)
+{
   int xStart = BAR_WIDTH * band;
-  for (int x = xStart; x < xStart + BAR_WIDTH; x++) {
-    for (int y = TOP; y >= TOP - barHeight; y--) {
+  for (int x = xStart; x < xStart + BAR_WIDTH; x++)
+  {
+    for (int y = TOP; y >= TOP - barHeight; y--)
+    {
       matrix->drawPixel(x, y, ColorFromPalette(purplePal, y * (255 / (barHeight + 1))));
     }
   }
 }
 
-void LedManager::changingBars(int band, int barHeight) {
+void DeckLight::changingBars(int band, int barHeight)
+{
   int xStart = BAR_WIDTH * band;
-  for (int x = xStart; x < xStart + BAR_WIDTH; x++) {
-    for (int y = TOP; y >= TOP - barHeight; y--) {
+  for (int x = xStart; x < xStart + BAR_WIDTH; x++)
+  {
+    for (int y = TOP; y >= TOP - barHeight; y--)
+    {
       matrix->drawPixel(x, y, CHSV(y * (255 / kMatrixHeight) + colorTimer, 255, 255));
     }
   }
 }
 
-void LedManager::centerBars(int band, int barHeight) {
+void DeckLight::centerBars(int band, int barHeight)
+{
   int xStart = BAR_WIDTH * band;
-  for (int x = xStart; x < xStart + BAR_WIDTH; x++) {
-    if (barHeight % 2 == 0) barHeight--;
-    int yStart = ((kMatrixHeight - barHeight) / 2 );
-    for (int y = yStart; y <= (yStart + barHeight); y++) {
+  for (int x = xStart; x < xStart + BAR_WIDTH; x++)
+  {
+    if (barHeight % 2 == 0)
+      barHeight--;
+    int yStart = ((kMatrixHeight - barHeight) / 2);
+    for (int y = yStart; y <= (yStart + barHeight); y++)
+    {
       int colorIndex = constrain((y - yStart) * (255 / barHeight), 0, 255);
       matrix->drawPixel(x, y, ColorFromPalette(heatPal, colorIndex));
     }
   }
 }
 
-void LedManager::whitePeak(int band) {
+void DeckLight::whitePeak(int band)
+{
   int xStart = BAR_WIDTH * band;
   int peakHeight = TOP - peak[band] - 1;
-  for (int x = xStart; x < xStart + BAR_WIDTH; x++) {
-    matrix->drawPixel(x, peakHeight, CHSV(0,0,255));
+  for (int x = xStart; x < xStart + BAR_WIDTH; x++)
+  {
+    matrix->drawPixel(x, peakHeight, CHSV(0, 0, 255));
   }
 }
 
-void LedManager::outrunPeak(int band) {
+void DeckLight::outrunPeak(int band)
+{
   int xStart = BAR_WIDTH * band;
   int peakHeight = TOP - peak[band] - 1;
-  for (int x = xStart; x < xStart + BAR_WIDTH; x++) {
+  for (int x = xStart; x < xStart + BAR_WIDTH; x++)
+  {
     matrix->drawPixel(x, peakHeight, ColorFromPalette(outrunPal, peakHeight * (255 / kMatrixHeight)));
   }
 }
 
-void LedManager::waterfall(int band) {
+void DeckLight::waterfall(int band)
+{
   int xStart = BAR_WIDTH * band;
   double highestBandValue = 60000; // Set this to calibrate your waterfall
 
   // Draw bottom line
-  for (int x = xStart; x < xStart + BAR_WIDTH; x++) {
-    matrix->drawPixel(x, 0, CHSV(constrain(map(bandValues[band],0,highestBandValue,160,0),0,160), 255, 255));
+  for (int x = xStart; x < xStart + BAR_WIDTH; x++)
+  {
+    matrix->drawPixel(x, 0, CHSV(constrain(map(bandValues[band], 0, highestBandValue, 160, 0), 0, 160), 255, 255));
   }
 
   // Move screen up starting at 2nd row from top
-  if (band == NUM_BANDS - 1){
-    for (int y = kMatrixHeight - 2; y >= 0; y--) {
-      for (int x = 0; x < kMatrixWidth; x++) {
+  if (band == NUM_BANDS - 1)
+  {
+    for (int y = kMatrixHeight - 2; y >= 0; y--)
+    {
+      for (int x = 0; x < kMatrixWidth; x++)
+      {
         int pixelIndexY = matrix->XY(x, y + 1);
         int pixelIndex = matrix->XY(x, y);
         leds[pixelIndexY] = leds[pixelIndex];
@@ -331,4 +407,3 @@ void LedManager::waterfall(int band) {
     }
   }
 }
-
