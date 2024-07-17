@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <FastLED_NeoMatrix.h>
 #include "DeckLight.h"
 
 // LED matrix
@@ -50,12 +49,6 @@ CRGBPalette16 greenbluePal = greenblue_gp;
 CRGBPalette16 heatPal = redyellow_gp;
 uint8_t colorTimer = 0;
 
-// FastLED_NeoMatrix - see https://github.com/marcmerlin/FastLED_NeoMatrix
-FastLED_NeoMatrix *matrix = new FastLED_NeoMatrix(
-    leds, kMatrixWidth, kMatrixHeight,
-    NEO_MATRIX_TOP + NEO_MATRIX_LEFT +
-        NEO_MATRIX_ROWS + NEO_MATRIX_ZIGZAG +
-        NEO_TILE_TOP + NEO_TILE_LEFT + NEO_TILE_ROWS);
 
 int oldBarHeights[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 int bandValues[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -65,18 +58,20 @@ byte peak[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // The length of
 #define VU_PEAK_SCALAR 1.4
 #define VU_MAX 170
 
-DeckLight::DeckLight()
+DeckLight::DeckLight() : modeBtn(THEME_BUTTON_PIN)
 {
-  modeBtn = new OneButton(THEME_BUTTON_PIN);
   themeIndex = 0;
   autoChangePatterns = false;
+
+  matrix = new FastLED_NeoMatrix(leds, kMatrixWidth, kMatrixHeight, 
+    NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_ROWS + NEO_MATRIX_ZIGZAG + NEO_TILE_TOP + NEO_TILE_LEFT + NEO_TILE_ROWS);
 }
 
 void DeckLight::setup()
-{  
-  modeBtn->attachClick(changeTheme);
-  modeBtn->attachDoubleClick(changeBrightness);
-  modeBtn->attachLongPressStart(startAutoMode);
+{
+  modeBtn.attachClick(changeTheme);
+  modeBtn.attachDoubleClick(changeBrightness);
+  modeBtn.attachLongPressStart(startAutoMode);
 
   // Setup LED matrix
   FastLED.addLeds<CHIPSET, LED_MATRIX_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalSMD5050);
@@ -90,7 +85,7 @@ void DeckLight::setup()
 
 void DeckLight::tick()
 {
-  modeBtn->tick();
+  modeBtn.tick();
 }
 
 void DeckLight::displayAudio(int bandValues[])

@@ -3,6 +3,7 @@
 
 #include "devices.h"
 #include <OneButton.h>
+#include <FastLED_NeoMatrix.h>
 
 class DeckLight
 {
@@ -29,7 +30,8 @@ private:
   static void changeBrightness();
 
   int amplitude = 27000;
-  OneButton* modeBtn;
+  OneButton modeBtn;
+  FastLED_NeoMatrix* matrix;
 
   static int themeIndex;
   static bool autoChangePatterns;
