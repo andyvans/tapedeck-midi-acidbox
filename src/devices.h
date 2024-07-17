@@ -1,5 +1,4 @@
-#ifndef DEVICES_H
-#define DEVICES_H
+#pragma once
 
 // Define the pins for the devices
 #define AUDIO_IN_PIN              1  // Analog audio signal input
@@ -9,5 +8,3 @@
 #define DECK_LED_PIN              5 // Deck LED
 #define ANALOG_VU_METER_LEFT_PIN  6 // Analog VU meter left
 #define ANALOG_VU_METER_RIGHT_PIN 7 // Analog VU meter right
-
-#endif

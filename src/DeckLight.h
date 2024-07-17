@@ -1,5 +1,4 @@
-#ifndef DeckLight_h
-#define DeckLight_h
+#pragma once
 
 #include "devices.h"
 #include <OneButton.h>
@@ -36,5 +35,3 @@ private:
   static int themeIndex;
   static bool autoChangePatterns;
 };
-
-#endif
