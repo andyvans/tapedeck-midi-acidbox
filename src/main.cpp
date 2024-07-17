@@ -12,8 +12,6 @@
 
 // FFT audio processing
 unsigned int sampling_period_us;
-byte peak[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // The length of these arrays must be >= NUM_BANDS
-int oldBarHeights[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 int bandValues[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 float vReal[SAMPLES];
 float vImag[SAMPLES];
@@ -26,15 +24,13 @@ void analyseAudio();
 
 void setup()
 {
-  Serial.begin(115200);  
-   
+  Serial.begin(115200);
   sampling_period_us = round(1000000 * (1.0 / SAMPLING_FREQ));
+  deckLight.setup();
 }
 
 void loop()
 {
-  deckLight.tick();
-
   // Sample the audio pin
   for (int i = 0; i < SAMPLES; i++)
   {
@@ -46,8 +42,9 @@ void loop()
       /* chill */
     }
   }
-
+  
   analyseAudio();
+  deckLight.tick();
   deckLight.displayAudio(bandValues);
 }
 

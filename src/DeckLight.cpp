@@ -51,18 +51,17 @@ uint8_t colorTimer = 0;
 
 
 int oldBarHeights[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-int bandValues[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 byte peak[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // The length of these arrays must be >= NUM_BANDS
 
 // Analog vu meter variables
 #define VU_PEAK_SCALAR 1.4
 #define VU_MAX 170
 
+int DeckLight::themeIndex = 0;
+bool DeckLight::autoChangePatterns = false;
+
 DeckLight::DeckLight() : modeBtn(THEME_BUTTON_PIN)
 {
-  themeIndex = 0;
-  autoChangePatterns = false;
-
   matrix = new FastLED_NeoMatrix(leds, kMatrixWidth, kMatrixHeight, 
     NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_ROWS + NEO_MATRIX_ZIGZAG + NEO_TILE_TOP + NEO_TILE_LEFT + NEO_TILE_ROWS);
 }
@@ -165,7 +164,7 @@ void DeckLight::updateBarVuMeter(int bandValues[])
       changingBars(band, barHeight);
       break;
     case 5:
-      waterfall(band);
+      waterfall(bandValues, band);
       break;
     }
 
@@ -377,7 +376,7 @@ void DeckLight::outrunPeak(int band)
   }
 }
 
-void DeckLight::waterfall(int band)
+void DeckLight::waterfall(int bandValues[], int band)
 {
   int xStart = BAR_WIDTH * band;
   double highestBandValue = 60000; // Set this to calibrate your waterfall

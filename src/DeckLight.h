@@ -22,7 +22,7 @@ private:
   void centerBars(int band, int barHeight);
   void whitePeak(int band);
   void outrunPeak(int band);
-  void waterfall(int band);
+  void waterfall(int bandValues[], int band);
   
   static void changeTheme();
   static void startAutoMode();  
