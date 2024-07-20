@@ -22,8 +22,8 @@ DeckLight::DeckLight() :
 void DeckLight::Setup()
 {
   modeBtn.attachClick(ChangeTheme);
-  modeBtn.attachDoubleClick(ChangeBrightness);
-  modeBtn.attachLongPressStart(StartAutoMode);
+  modeBtn.attachLongPressStart(ChangeBrightness);
+  modeBtn.attachDoubleClick(StartAutoMode);
 
   // Careful with the amount of power here if running off USB port
   const int MaxMilliAmps = 700; 
