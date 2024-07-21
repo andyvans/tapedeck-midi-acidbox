@@ -1,13 +1,13 @@
 #pragma once
 
-#include <MIDI.h>
+#include <Arduino.h>
 
 class MidiController
 {
 public:
-  void setup();
-  void tick();
-
+  void Setup();
+  void Tick();
+  
 private:
   void sendEncoderControlChange();
   void sendProgramChange(uint8_t program, uint8_t channel);

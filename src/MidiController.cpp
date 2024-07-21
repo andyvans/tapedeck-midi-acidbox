@@ -1,3 +1,5 @@
+#include <MIDI.h>
+
 // MIDI channels for keyup and keydown events
 #define KEY_DOWN_CHANNEL 1
 #define KEY_UP_CHANNEL 2

@@ -56,7 +56,7 @@ private:
   int activeDeckLed = 0;
 
   // Analog vu meter variables
-  const int AnalogVUPeakScalar = 1.4;
+  const int AnalogVUPeakScalar = 1.2;
   const int AnalogVUMax = 170;
   const int AnalogVUVariance = 10;
   

@@ -158,12 +158,13 @@ void DeckLight::UpdateAnalogVuMeter()
   // Update analog vu meter. Average the peaks and map the output to the meter
   // Exclude the highest band as it's usually too high
   int vuPeak = 0;
-  for (byte band = 0; band < NUM_BANDS - 1; band++)
+  const int bandCount = NUM_BANDS - 1;
+  for (byte band = 0; band < bandCount; band++)
   {
     vuPeak += oldBarHeights[band];
   }
 
-  vuPeak = (vuPeak / NUM_BANDS) * AnalogVUPeakScalar;
+  vuPeak = (vuPeak / bandCount) * AnalogVUPeakScalar;
   int vuUnits = map(vuPeak, 0, DeckLightMatrixHeight, 0, 255);
 
   // Limit the output to protect the analog VU meters
