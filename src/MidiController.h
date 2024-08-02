@@ -1,15 +1,23 @@
 #pragma once
 
 #include <Arduino.h>
+#include <OneButton.h>
+#include <RotaryEncoder.h>
+
+#define ENABLE_MIDI
 
 class MidiController
 {
 public:
+  MidiController();
   void Setup();
   void Tick();
   
 private:
-  void sendEncoderControlChange();
-  void sendProgramChange(uint8_t program, uint8_t channel);
-  void sendControlChange(uint8_t number, uint8_t value, uint8_t channel);
+  OneButton drumButton;
+  RotaryEncoder drumEncoder;
+  int encoderPos = 0;
+
+  static void SendProgramChange(int program, int channel);
+  static void SendControlChange(uint8_t number, uint8_t value, uint8_t channel);
 };

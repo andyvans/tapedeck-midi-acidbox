@@ -12,5 +12,16 @@
 #define ANALOG_VU_METER_LEFT_PIN  6 // Analog VU meter left
 #define ANALOG_VU_METER_RIGHT_PIN 7 // Analog VU meter right
 
+// Rotary encoder pins
+#define ROTARY_ENCODER_1_A_PIN    8
+#define ROTARY_ENCODER_1_B_PIN    9
+#define ROTARY_ENCODER_1_SW_PIN   10
+
+// MIDI settings
+#define MIDI_PIN                 2 // MIDI input
+
 // Audio processing
 #define NUM_BANDS                 4 // Number of bands to process and display
+
+
+

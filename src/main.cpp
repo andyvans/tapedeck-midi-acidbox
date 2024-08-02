@@ -15,11 +15,17 @@ void setup()
   deckLight.Setup();
 }
 
-void loop()
+void processEvents()
 {
   deckLight.Tick();
+  midiController.Tick();
+}
+
+void loop()
+{
+  processEvents();
   audioProc.Analyse();
   
-  deckLight.Tick();
+  processEvents();
   deckLight.DisplayAudio(audioProc.bandValues);
 }
