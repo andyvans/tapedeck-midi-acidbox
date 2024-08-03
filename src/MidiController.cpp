@@ -11,19 +11,18 @@
 #define MIN_MIDI_VAL 0
 #define MAX_MIDI_VAL 127
 
-#define SYNTH1_MIDI_CHAN 1
-#define SYNTH2_MIDI_CHAN 2
-
-#define DRUM_MIDI_CHAN 10
-
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial, MIDI);
 
 MidiController::MidiController() :
   drumButton(ROTARY_ENCODER_1_SW_PIN),
   drumEncoder(ROTARY_ENCODER_1_A_PIN, ROTARY_ENCODER_1_B_PIN)
 {
+  static int button = 0;
   drumButton.attachClick([]() {
-    SendProgramChange(0, DRUM_MIDI_CHAN);
+    //SendProgramChange(0, DRUM_MIDI_CHAN);
+    button = button == 0 ? 127 : 0;
+    SendControlChange(CC_808_VOLUME, button, DRUM_MIDI_CHAN);
+    //SendControlChange(CC_ANY_DELAY_FB, 255, SYNTH1_MIDI_CHAN);
   });
 }
 

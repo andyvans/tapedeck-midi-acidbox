@@ -1,5 +1,10 @@
 #pragma once
 
+// Channels
+#define SYNTH1_MIDI_CHAN 1
+#define SYNTH2_MIDI_CHAN 2
+#define DRUM_MIDI_CHAN 10
+
 #define GM_MIDI
 //#define VINTAGE_MIDI
 
