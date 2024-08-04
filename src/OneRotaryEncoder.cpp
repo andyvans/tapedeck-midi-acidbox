@@ -5,7 +5,7 @@ OneRotaryEncoder::OneRotaryEncoder(int pinA, int pinB, int pinSwitch)
 {
 }
 
-void OneRotaryEncoder::AttachRotate(std::function<void(int)> callback)
+void OneRotaryEncoder::AttachRotate(std::function<void(bool, int)> callback)
 {
   encoderCallback = callback;
 }
@@ -44,7 +44,7 @@ void OneRotaryEncoder::Tick()
     lastPosition = CalculateAcceleration(newPos);
     if (encoderCallback)
     {
-      encoderCallback(newPos);
+      encoderCallback(buttonState, lastPosition);
     }
   }
 }

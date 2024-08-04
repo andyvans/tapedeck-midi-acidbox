@@ -27,8 +27,8 @@ MidiController::MidiController()
 
   // Encoder 1
   auto encoder1 = new OneRotaryEncoder(ROTARY_ENCODER_1_A_PIN, ROTARY_ENCODER_1_B_PIN, ROTARY_ENCODER_1_SW_PIN);
-  encoder1->AttachRotate([](int pos) {
-    SendControlChange(CC_808_VOLUME, pos, DRUM_MIDI_CHAN);
+  encoder1->AttachRotate([](bool state, int pos) {
+    SendControlChange(CC_808_VOLUME, state? 0 : pos, DRUM_MIDI_CHAN);
   });
   encoder1->AttachClickWithState([](bool state, int pos) {
     SendControlChange(CC_808_VOLUME, state? 0 : pos, DRUM_MIDI_CHAN);
@@ -37,8 +37,8 @@ MidiController::MidiController()
 
   // Encoder 2
   auto encoder2 = new OneRotaryEncoder(ROTARY_ENCODER_2_A_PIN, ROTARY_ENCODER_2_B_PIN, ROTARY_ENCODER_2_SW_PIN);
-  encoder2->AttachRotate([](int pos) {
-    SendControlChange(CC_303_VOLUME, pos, SYNTH1_MIDI_CHAN);
+  encoder2->AttachRotate([](bool state, int pos) {
+    SendControlChange(CC_303_VOLUME, state? 0 : pos, SYNTH1_MIDI_CHAN);
   });
   encoder2->AttachClickWithState([](bool state, int pos) {
     SendControlChange(CC_303_VOLUME, state? 0 : pos, SYNTH1_MIDI_CHAN);
@@ -47,8 +47,8 @@ MidiController::MidiController()
 
   // Encoder 3
   auto encoder3 = new OneRotaryEncoder(ROTARY_ENCODER_2_A_PIN, ROTARY_ENCODER_2_B_PIN, ROTARY_ENCODER_2_SW_PIN);
-  encoder3->AttachRotate([](int pos) {
-    SendControlChange(CC_303_VOLUME, pos, SYNTH2_MIDI_CHAN);
+  encoder3->AttachRotate([](bool state, int pos) {
+    SendControlChange(CC_303_VOLUME, state? 0 : pos, SYNTH2_MIDI_CHAN);
   });
   encoder3->AttachClickWithState([](bool state, int pos) {
     SendControlChange(CC_303_VOLUME, state? 0 : pos, SYNTH2_MIDI_CHAN);
