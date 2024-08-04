@@ -17,6 +17,13 @@
 #define ROTARY_ENCODER_1_B_PIN    16
 #define ROTARY_ENCODER_1_SW_PIN   17
 
+#define ROTARY_ENCODER_2_A_PIN    18
+#define ROTARY_ENCODER_2_B_PIN    19
+#define ROTARY_ENCODER_2_SW_PIN   20
+
+// Button pins
+#define BUTTON_1_PIN              21
+
 // MIDI settings
 #define MIDI_PIN                 2 // MIDI input
 
