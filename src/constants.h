@@ -12,21 +12,21 @@
 #define ANALOG_VU_METER_RIGHT_PIN 7 // Analog VU meter right
 
 // Rotary encoder pins
-#define ROTARY_ENCODER_1_A_PIN    15
+#define ROTARY_ENCODER_1_A_PIN    17
 #define ROTARY_ENCODER_1_B_PIN    16
-#define ROTARY_ENCODER_1_SW_PIN   17
+#define ROTARY_ENCODER_1_SW_PIN   15
 
-#define ROTARY_ENCODER_2_A_PIN    18
+#define ROTARY_ENCODER_2_A_PIN    3
 #define ROTARY_ENCODER_2_B_PIN    8
-#define ROTARY_ENCODER_2_SW_PIN   3
+#define ROTARY_ENCODER_2_SW_PIN   18
 
-#define ROTARY_ENCODER_3_A_PIN    9
+#define ROTARY_ENCODER_3_A_PIN    11
 #define ROTARY_ENCODER_3_B_PIN    10
-#define ROTARY_ENCODER_3_SW_PIN   11
+#define ROTARY_ENCODER_3_SW_PIN   9
 
-#define ROTARY_ENCODER_4_A_PIN    12
+#define ROTARY_ENCODER_4_A_PIN    14
 #define ROTARY_ENCODER_4_B_PIN    13
-#define ROTARY_ENCODER_4_SW_PIN   14
+#define ROTARY_ENCODER_4_SW_PIN   12
 
 // Button pins
 #define RECORD_BUTTON_PIN          21 // Change theme color

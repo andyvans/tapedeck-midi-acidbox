@@ -43,18 +43,18 @@ MidiController::MidiController()
   encoder1->AttachRotate([](bool state, int pos) {
     if (state) SendControlChange(CC_808_VOLUME, pos, DRUM_MIDI_CHAN);
   });
-  encoder1->AttachClickWithState([](bool state, int pos) {
-    SendControlChange(CC_808_VOLUME, state? 0 : pos, DRUM_MIDI_CHAN);
+  encoder1->AttachClick([]() {
+    SendControlChange(CC_808_VOLUME, 255, DRUM_MIDI_CHAN);
   });
   encoders[++encoderCount] = encoder1;
 
   // Encoder 2
   auto encoder2 = new OneRotaryEncoder(255, ROTARY_ENCODER_2_A_PIN, ROTARY_ENCODER_2_B_PIN, ROTARY_ENCODER_2_SW_PIN);
   encoder2->AttachRotate([](bool state, int pos) {
-    if (state) SendControlChange(CC_303_VOLUME, pos, SYNTH1_MIDI_CHAN);
+    SendControlChange(CC_303_VOLUME, pos, SYNTH1_MIDI_CHAN);
   });
   encoder2->AttachClickWithState([](bool state, int pos) {
-    SendControlChange(CC_303_VOLUME, state? 0 : pos, SYNTH1_MIDI_CHAN);
+    SendControlChange(CC_303_VOLUME, state? 0 : 255, SYNTH1_MIDI_CHAN);
   });
   encoders[++encoderCount] = encoder2;
 
@@ -107,35 +107,32 @@ void MidiController::Tick()
 
 void MidiController::SendProgramChange(int program, int channel)
 {
-#ifdef DEBUG
-  Serial.print("Program change: ");
-  Serial.print(program);
-  Serial.print(" ");
-  Serial.println(channel);
-#endif
-
 #ifdef ENABLE_MIDI
   MIDI.sendProgramChange(program, channel);
+#else
+  Serial.print("Program change:");
+  Serial.print(program);
+  Serial.print(" ");
+  Serial.print(channel);
+  Serial.println();
 #endif
 }
 
-void MidiController::SendControlChange(uint8_t number, uint8_t value, uint8_t channel)
+void MidiController::SendControlChange(uint8_t program, uint8_t value, uint8_t channel)
 {
   // Midi values are 0-127. Rotary encoder values are 0-255.
   int midiValue = map(value, 0, 255, 0, 127);
 
-#ifdef DEBUG
+#ifdef ENABLE_MIDI
+  MIDI.sendControlChange(number, midiValue, channel);
+#else
   Serial.print("Control change:");
-  Serial.print(number);
+  Serial.print(program);
   Serial.print(" ");
   Serial.print(midiValue);
   Serial.print(" ");
   Serial.print(channel);
   Serial.println();
-#endif
-
-#ifdef ENABLE_MIDI
-  MIDI.sendControlChange(number, midiValue, channel);
 #endif
 }
 

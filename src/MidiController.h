@@ -4,7 +4,7 @@
 #include <OneButton.h>
 #include "OneRotaryEncoder.h"
 
-#define ENABLE_MIDI
+//#define ENABLE_MIDI
 #define MIDI_CONTROLLER_MAX_DEVICES 20
 
 class MidiController
