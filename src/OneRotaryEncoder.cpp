@@ -1,8 +1,9 @@
 #include "OneRotaryEncoder.h"
 
-OneRotaryEncoder::OneRotaryEncoder(int pinA, int pinB, int pinSwitch)
+OneRotaryEncoder::OneRotaryEncoder(int startValue, int pinA, int pinB, int pinSwitch)
     : encoder(pinA, pinB), button(pinSwitch)
 {
+  encoder.setPosition(startValue);
 }
 
 void OneRotaryEncoder::AttachRotate(std::function<void(bool, int)> callback)

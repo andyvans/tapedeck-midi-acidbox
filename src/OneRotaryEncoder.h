@@ -6,7 +6,7 @@
 class OneRotaryEncoder {
 public:
     
-    OneRotaryEncoder(int pinA, int pinB, int pinSwitch);
+    OneRotaryEncoder(int startValue, int pinA, int pinB, int pinSwitch);
     void AttachRotate(std::function<void(bool, int)> encoderCallback);
     void AttachClick(callbackFunction switchCallback);
     void AttachClickWithState(std::function<void(bool, int)> clickWithStateCallback);

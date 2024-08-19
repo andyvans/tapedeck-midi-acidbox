@@ -5,9 +5,8 @@
 
 // Define the pins for the devices
 #define AUDIO_IN_PIN              1  // Analog audio signal input
-#define LED_MATRIX_PIN            4  // LED WS2812 matrix
-#define THEME_BUTTON_PIN          46 // Change color button
 
+#define LED_MATRIX_PIN            4  // LED WS2812 matrix
 #define DECK_LED_PIN              5 // Deck LED
 #define ANALOG_VU_METER_LEFT_PIN  6 // Analog VU meter left
 #define ANALOG_VU_METER_RIGHT_PIN 7 // Analog VU meter right
@@ -18,14 +17,26 @@
 #define ROTARY_ENCODER_1_SW_PIN   17
 
 #define ROTARY_ENCODER_2_A_PIN    18
-#define ROTARY_ENCODER_2_B_PIN    19
-#define ROTARY_ENCODER_2_SW_PIN   20
+#define ROTARY_ENCODER_2_B_PIN    8
+#define ROTARY_ENCODER_2_SW_PIN   3
+
+#define ROTARY_ENCODER_3_A_PIN    9
+#define ROTARY_ENCODER_3_B_PIN    10
+#define ROTARY_ENCODER_3_SW_PIN   11
+
+#define ROTARY_ENCODER_4_A_PIN    12
+#define ROTARY_ENCODER_4_B_PIN    13
+#define ROTARY_ENCODER_4_SW_PIN   14
 
 // Button pins
-#define BUTTON_1_PIN              21
+#define RECORD_BUTTON_PIN          21 // Change theme color
+#define REWIND_BUTTON_PIN          47 // Button 1
+#define FAST_FORWARD_BUTTON_PIN    48 // Button 2
+#define PLAY_BUTTON_PIN            35 // Button 3
+#define STOP_BUTTON_PIN            36 // Button 4
+//#define PAUSE_PIN                RST // Reset AcidBox
 
-// MIDI settings
-#define MIDI_PIN                 2 // MIDI input
+
 
 // Audio processing
 #define NUM_BANDS                 4 // Number of bands to process and display
