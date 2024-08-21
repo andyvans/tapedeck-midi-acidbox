@@ -7,21 +7,21 @@ class OneRotaryEncoder {
 public:
     
     OneRotaryEncoder(int startValue, int pinA, int pinB, int pinSwitch);
-    void AttachRotate(std::function<void(bool, int)> encoderCallback);
+    void AttachRotate(std::function<void(int)> encoderCallback);
     void AttachClick(callbackFunction switchCallback);
-    void AttachClickWithState(std::function<void(bool, int)> clickWithStateCallback);
+    void AttachClickWithState(std::function<void(int)> clickWithStateCallback);
     void AttachLongPressStart(callbackFunction switchCallback);
     void Tick();
+    int GetPosition() { return lastPosition; }
 
 private:
     OneButton button;
     RotaryEncoder encoder;
-    int CalculateAcceleration(int newPos);
-    std::function<void(bool, int)> encoderCallback;
-    std::function<void(bool, int)> clickWithStateCallback;
+    int CalculateAcceleration(int oldPos, int newPos);
+    std::function<void(int)> encoderCallback;
+    std::function<void(int)> clickWithStateCallback;
 
     static void ButtonStateChange(void* pEncoder);
 
     int lastPosition;
-    bool buttonState;
 };

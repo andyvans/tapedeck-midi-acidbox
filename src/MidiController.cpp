@@ -40,41 +40,53 @@ MidiController::MidiController()
 
   // Encoder 1
   auto encoder1 = new OneRotaryEncoder(255, ROTARY_ENCODER_1_A_PIN, ROTARY_ENCODER_1_B_PIN, ROTARY_ENCODER_1_SW_PIN);
-  encoder1->AttachRotate([](bool state, int pos) {
-    if (state) SendControlChange(CC_808_VOLUME, pos, DRUM_MIDI_CHAN);
+  encoder1->AttachRotate([](int pos) {
+    SendControlChange(CC_808_VOLUME, pos, DRUM_MIDI_CHAN);
   });
   encoder1->AttachClick([]() {
+    SendControlChange(CC_808_VOLUME, 0, DRUM_MIDI_CHAN);
+  });
+  encoder1->AttachLongPressStart([]() {
     SendControlChange(CC_808_VOLUME, 255, DRUM_MIDI_CHAN);
   });
   encoders[++encoderCount] = encoder1;
 
   // Encoder 2
   auto encoder2 = new OneRotaryEncoder(255, ROTARY_ENCODER_2_A_PIN, ROTARY_ENCODER_2_B_PIN, ROTARY_ENCODER_2_SW_PIN);
-  encoder2->AttachRotate([](bool state, int pos) {
+  encoder2->AttachRotate([](int pos) {
     SendControlChange(CC_303_VOLUME, pos, SYNTH1_MIDI_CHAN);
   });
-  encoder2->AttachClickWithState([](bool state, int pos) {
-    SendControlChange(CC_303_VOLUME, state? 0 : 255, SYNTH1_MIDI_CHAN);
+  encoder2->AttachClick([]() {
+    SendControlChange(CC_303_VOLUME, 0, SYNTH1_MIDI_CHAN);
+  });
+  encoder2->AttachLongPressStart([]() {
+    SendControlChange(CC_303_VOLUME, 255, SYNTH1_MIDI_CHAN);
   });
   encoders[++encoderCount] = encoder2;
 
   // Encoder 3
   auto encoder3 = new OneRotaryEncoder(255, ROTARY_ENCODER_3_A_PIN, ROTARY_ENCODER_3_B_PIN, ROTARY_ENCODER_3_SW_PIN);
-  encoder3->AttachRotate([](bool state, int pos) {
-    if (state) SendControlChange(CC_303_VOLUME, pos, SYNTH2_MIDI_CHAN);
+  encoder3->AttachRotate([](int pos) {
+    SendControlChange(CC_303_VOLUME, pos, SYNTH2_MIDI_CHAN);
   });
-  encoder3->AttachClickWithState([](bool state, int pos) {
-    SendControlChange(CC_303_VOLUME, state? 0 : pos, SYNTH2_MIDI_CHAN);
+  encoder3->AttachClick([]() {
+    SendControlChange(CC_303_VOLUME, 0, SYNTH2_MIDI_CHAN);
+  });
+  encoder3->AttachLongPressStart([]() {
+    SendControlChange(CC_303_VOLUME, 255, SYNTH2_MIDI_CHAN);
   });
   encoders[++encoderCount] = encoder3;
 
   // Encoder 4
   auto encoder4 = new OneRotaryEncoder(255, ROTARY_ENCODER_4_A_PIN, ROTARY_ENCODER_4_B_PIN, ROTARY_ENCODER_4_SW_PIN);
-  encoder4->AttachRotate([](bool state, int pos) {
-    if (state) SendControlChange(CC_303_VOLUME, pos, SYNTH2_MIDI_CHAN);
+  encoder4->AttachRotate([](int pos) {
+    SendControlChange(CC_ANY_REVERB_TIME, pos, SYNTH1_MIDI_CHAN);
   });
-  encoder4->AttachClickWithState([](bool state, int pos) {
-    SendControlChange(CC_303_VOLUME, state? 0 : pos, SYNTH2_MIDI_CHAN);
+  encoder4->AttachClick([]() {
+    SendControlChange(CC_ANY_REVERB_TIME, 0, SYNTH1_MIDI_CHAN);
+  });
+  encoder4->AttachLongPressStart([]() {
+    SendControlChange(CC_ANY_REVERB_TIME, 255, SYNTH1_MIDI_CHAN);
   });
 }
 

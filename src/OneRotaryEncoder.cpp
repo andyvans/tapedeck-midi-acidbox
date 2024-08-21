@@ -6,7 +6,7 @@ OneRotaryEncoder::OneRotaryEncoder(int startValue, int pinA, int pinB, int pinSw
   encoder.setPosition(startValue);
 }
 
-void OneRotaryEncoder::AttachRotate(std::function<void(bool, int)> callback)
+void OneRotaryEncoder::AttachRotate(std::function<void(int)> callback)
 {
   encoderCallback = callback;
 }
@@ -16,7 +16,12 @@ void OneRotaryEncoder::AttachClick(callbackFunction callback)
   button.attachClick(callback);
 }
 
-void OneRotaryEncoder::AttachClickWithState(std::function<void(bool, int)> callback)
+void OneRotaryEncoder::AttachLongPressStart(callbackFunction callback)
+{
+  button.attachLongPressStart(callback);
+}
+
+void OneRotaryEncoder::AttachClickWithState(std::function<void(int)> callback)
 {
   clickWithStateCallback = callback;
   button.attachClick(ButtonStateChange, this);
@@ -25,40 +30,34 @@ void OneRotaryEncoder::AttachClickWithState(std::function<void(bool, int)> callb
 void OneRotaryEncoder::ButtonStateChange(void *pEncoder)
 {
   OneRotaryEncoder *encoder = (OneRotaryEncoder *)pEncoder;
-  encoder->buttonState = !encoder->buttonState;
-  encoder->clickWithStateCallback(encoder->buttonState, encoder->lastPosition);
-}
-
-void OneRotaryEncoder::AttachLongPressStart(callbackFunction callback)
-{
-  button.attachLongPressStart(callback);
+  encoder->clickWithStateCallback(encoder->lastPosition);
 }
 
 void OneRotaryEncoder::Tick()
 {
   encoder.tick();
-  button.tick();
-
-  int newPos = encoder.getPosition();
-  if (lastPosition != newPos)
+  int newPosition = encoder.getPosition();
+  if (lastPosition != newPosition)
   {
-    lastPosition = CalculateAcceleration(newPos);
-    if (encoderCallback)
+    lastPosition = newPosition; // CalculateAcceleration(lastPosition, newPosition);
+    if (encoderCallback != nullptr)
     {
-      encoderCallback(buttonState, lastPosition);
+      encoderCallback(lastPosition);
     }
   }
+  button.tick();
 }
 
-int OneRotaryEncoder::CalculateAcceleration(int newPos)
+int OneRotaryEncoder::CalculateAcceleration(int lastPos, int newPos)
 {
-  // the maximum acceleration is 10 times.
+  // Accelerate when there was a previous rotation in the same direction.
+  // The maximum acceleration is 10 times.
   constexpr float m = 10;
 
-  // at 200ms or slower, there should be no acceleration. (factor 1)
+  // At 200ms or slower, there should be no acceleration. (factor 1)
   constexpr float longCutoff = 50;
 
-  // at 5 ms, we want to have maximum acceleration (factor m)
+  // At 5 ms, we want to have maximum acceleration (factor m)
   constexpr float shortCutoff = 5;
 
   // To derive the calc. constants, compute as follows:
@@ -67,7 +66,6 @@ int OneRotaryEncoder::CalculateAcceleration(int newPos)
 
   constexpr float a = (m - 1) / (shortCutoff - longCutoff);
   constexpr float b = 1 - longCutoff * a;
-
   unsigned long ms = encoder.getMillisBetweenRotations();
 
   if (ms < longCutoff)
@@ -80,8 +78,7 @@ int OneRotaryEncoder::CalculateAcceleration(int newPos)
     }
 
     float ticksActual_float = a * ms + b;
-    long deltaTicks = (long)ticksActual_float * (newPos - lastPosition);
-
+    long deltaTicks = (long)ticksActual_float * (newPos - lastPos);
     newPos = newPos + deltaTicks;
     encoder.setPosition(newPos);
   }
