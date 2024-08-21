@@ -17,7 +17,3 @@ The motors have been removed, the potentiometers have been replaced with rotary 
 ## Work in progress
 
 [![In progress](images/wip-1.jpg)](images/wip-1.jpg)
-
-## Notes
-
-Comment out all code in .pio\libdeps\esp-wrover-kit\EasyButton\src\EasyButtonTouch.h to compile on esp32.
