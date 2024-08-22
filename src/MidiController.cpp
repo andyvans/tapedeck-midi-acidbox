@@ -7,6 +7,11 @@ MIDI_CREATE_INSTANCE(HardwareSerial, Serial, MIDI);
 
 MidiController::MidiController()
 {
+  // Set switch pins to digital input
+  pinMode(LEFT_SWITCH_PIN, INPUT);
+  pinMode(RIGHT_SWITCH_PIN, INPUT);
+
+  // Setup encoders and buttons
   int buttonCount = -1;
   int encoderCount = -1;
 
@@ -79,7 +84,7 @@ MidiController::MidiController()
 
   // Encoder 4
   auto encoder4 = new OneRotaryEncoder(255, ROTARY_ENCODER_4_A_PIN, ROTARY_ENCODER_4_B_PIN, ROTARY_ENCODER_4_SW_PIN);
-  encoder4->AttachRotate([](int pos) {
+  encoder4->AttachRotate([](int pos) {    
     SendControlChange(CC_ANY_REVERB_TIME, pos, SYNTH1_MIDI_CHAN);
   });
   encoder4->AttachClick([]() {
@@ -99,6 +104,8 @@ void MidiController::Setup()
 
 void MidiController::Tick()
 {
+  ReadSwitchStates();
+
 #ifdef ENABLE_MIDI
   MIDI.read();
 #endif
@@ -115,6 +122,12 @@ void MidiController::Tick()
       encoders[i]->Tick();
     }
   }
+}
+
+void MidiController::ReadSwitchStates()
+{
+  leftSwitchState = digitalRead(LEFT_SWITCH_PIN) == HIGH;
+  rightSwitchState = digitalRead(RIGHT_SWITCH_PIN) == HIGH;
 }
 
 void MidiController::SendProgramChange(int program, int channel)

@@ -36,7 +36,8 @@
 #define STOP_BUTTON_PIN            36 // Button 4
 //#define PAUSE_PIN                RST // Reset AcidBox
 
-
+#define LEFT_SWITCH_PIN            37 // Left switch
+#define RIGHT_SWITCH_PIN           38 // Right switch
 
 // Audio processing
 #define NUM_BANDS                 4 // Number of bands to process and display

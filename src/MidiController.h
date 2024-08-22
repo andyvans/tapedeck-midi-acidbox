@@ -18,6 +18,11 @@ private:
   OneButton* buttons[MIDI_CONTROLLER_MAX_DEVICES] = {};
   OneRotaryEncoder* encoders[MIDI_CONTROLLER_MAX_DEVICES] = {};
 
+  void ReadSwitchStates();
+
   static void SendProgramChange(int program, int channel);
   static void SendControlChange(uint8_t number, uint8_t value, uint8_t channel);
+
+  bool leftSwitchState = false;
+  bool rightSwitchState = false;
 };
