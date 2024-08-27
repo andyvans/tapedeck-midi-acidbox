@@ -30,6 +30,6 @@ private:
 
   void ProcessAudioControl();
 
-  static void SendProgramChange(int program, int channel);
-  static void SendControlChange(uint8_t number, uint8_t value, uint8_t channel);
+  void SendProgramChange(int program, int channel);
+  void SendControlChange(uint8_t number, uint8_t value, uint8_t channel);
 };
