@@ -57,7 +57,7 @@ MidiController::MidiController()
   encoders[++encoderCount] = encoder1;
 
   // Encoder 2
-  auto encoder2 = new OneRotaryEncoder(255, ROTARY_ENCODER_2_A_PIN, ROTARY_ENCODER_2_B_PIN, ROTARY_ENCODER_2_SW_PIN);
+  //auto encoder2 = new OneRotaryEncoder(255, ROTARY_ENCODER_2_A_PIN, ROTARY_ENCODER_2_B_PIN, ROTARY_ENCODER_2_SW_PIN);
   // encoder2->AttachRotate([](int pos) {
   //   SendControlChange(CC_303_VOLUME, pos, SYNTH1_MIDI_CHAN);
   // });
@@ -67,10 +67,10 @@ MidiController::MidiController()
   // encoder2->AttachLongPressStart([]() {
   //   SendControlChange(CC_303_VOLUME, 255, SYNTH1_MIDI_CHAN);
   // });
-  encoders[++encoderCount] = encoder2;
+  //encoders[++encoderCount] = encoder2;
 
   // Encoder 3
-  auto encoder3 = new OneRotaryEncoder(255, ROTARY_ENCODER_3_A_PIN, ROTARY_ENCODER_3_B_PIN, ROTARY_ENCODER_3_SW_PIN);
+  //auto encoder3 = new OneRotaryEncoder(255, ROTARY_ENCODER_3_A_PIN, ROTARY_ENCODER_3_B_PIN, ROTARY_ENCODER_3_SW_PIN);
   // encoder3->AttachRotate([](int pos) {
   //   SendControlChange(CC_303_VOLUME, pos, SYNTH2_MIDI_CHAN);
   // });
@@ -80,10 +80,10 @@ MidiController::MidiController()
   // encoder3->AttachLongPressStart([]() {
   //   SendControlChange(CC_303_VOLUME, 255, SYNTH2_MIDI_CHAN);
   // });
-  encoders[++encoderCount] = encoder3;
+  //encoders[++encoderCount] = encoder3;
 
   // Encoder 4
-  auto encoder4 = new OneRotaryEncoder(255, ROTARY_ENCODER_4_A_PIN, ROTARY_ENCODER_4_B_PIN, ROTARY_ENCODER_4_SW_PIN);
+  //auto encoder4 = new OneRotaryEncoder(255, ROTARY_ENCODER_4_A_PIN, ROTARY_ENCODER_4_B_PIN, ROTARY_ENCODER_4_SW_PIN);
   // encoder4->AttachRotate([](int pos) {    
   //   SendControlChange(CC_ANY_REVERB_TIME, pos, SYNTH1_MIDI_CHAN);
   // });
@@ -93,7 +93,7 @@ MidiController::MidiController()
   // encoder4->AttachLongPressStart([]() {
   //   SendControlChange(CC_ANY_REVERB_TIME, 255, SYNTH1_MIDI_CHAN);
   // });
-  encoders[++encoderCount] = encoder4;
+  //encoders[++encoderCount] = encoder4;
 }
 
 void MidiController::Setup()
@@ -120,36 +120,63 @@ void MidiController::Tick()
 
 void MidiController::ProcessAudioControl()
 {
-  MidiControlState midiState = ReadSwitchStates();
+  MidiControlState midiState = MidiControlState::Control0; //ReadSwitchStates();
 
   auto encoderSwitch1 = encoders[0]->GetSwitchState();
-  auto encoderSwitch2 = encoders[1]->GetSwitchState();
-  auto encoderSwitch3 = encoders[2]->GetSwitchState();
-  auto encoderSwitch4 = encoders[3]->GetSwitchState();
+  //auto encoderSwitch2 = encoders[1]->GetSwitchState();
+  //auto encoderSwitch3 = encoders[2]->GetSwitchState();
+  //auto encoderSwitch4 = encoders[3]->GetSwitchState();
 
-  auto encoderPos1 = encoders[0]->GetPosition();
-  auto encoderPos2 = encoders[1]->GetPosition();
+  auto encoderPos1 = encoders[0]->GetPosition();  
+  //auto encoderPos2 = encoders[1]->GetPosition();
+
+#ifndef ENABLE_MIDI
+    Serial.print("Encoder switch: ");
+    Serial.print(encoderSwitch1.hasNewState);
+    Serial.print(encoderSwitch1.state);
+    Serial.print(" Encoder position: ");
+    Serial.print(encoderPos1.hasNewPosition);
+    Serial.print(encoderPos1.position);
+    Serial.println();
+#endif
+
+  
 
   switch (midiState)
   {
   case MidiControlState::Control0:
-    if (encoderSwitch1 == EncoderSwitchState::Clicked)
+    if (encoderSwitch1.hasNewState)
     {
-      SendControlChange(CC_808_VOLUME, 0, DRUM_MIDI_CHAN);
+      if (encoderSwitch1.state == EncoderSwitchPress::Clicked)
+      {
+        SendControlChange(CC_808_VOLUME, 0, DRUM_MIDI_CHAN);
+      }
+      else if (encoderSwitch1.state == EncoderSwitchPress::LongPressed)
+      {
+        SendControlChange(CC_808_VOLUME, 255, DRUM_MIDI_CHAN);
+      }
+      //SendControlChange(CC_808_VOLUME, 0, DRUM_MIDI_CHAN);
     }
-    else if (encoderSwitch1 == EncoderSwitchState::LongPressed)
-    {
-      SendControlChange(CC_303_VOLUME, 255, SYNTH1_MIDI_CHAN);
-    }
+    // if (encoderSwitch2.hasNewState)
+    // {
+    //   if (encoderSwitch2.state == EncoderSwitchPress::Clicked)
+    //   {
+    //     SendControlChange(CC_303_VOLUME, 0, SYNTH1_MIDI_CHAN);
+    //   }
+    //   else if (encoderSwitch2.state == EncoderSwitchPress::LongPressed)
+    //   {
+    //     SendControlChange(CC_303_VOLUME, 255, SYNTH1_MIDI_CHAN);
+    //   }
+    // }
 
-    if (encoderPos1 != -1)
+    if (encoderPos1.hasNewPosition)
     {
-      SendControlChange(CC_808_VOLUME, encoderPos1, DRUM_MIDI_CHAN);
-    }
-    if (encoderPos2 != -1)  
-    {
-      SendControlChange(CC_303_VOLUME, encoderPos2, SYNTH1_MIDI_CHAN);
-    }
+      SendControlChange(CC_808_VOLUME, encoderPos1.position, DRUM_MIDI_CHAN);
+    }    
+    // if (encoderPos2.hasNewPosition)  
+    // {
+    //   SendControlChange(CC_303_VOLUME, encoderPos2.position, SYNTH1_MIDI_CHAN);
+    // }
     break;
   case MidiControlState::Control1:
     break;

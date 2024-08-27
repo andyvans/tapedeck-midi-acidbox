@@ -1,40 +1,47 @@
 #include "OneRotaryEncoder.h"
 
 OneRotaryEncoder::OneRotaryEncoder(int startValue, int pinA, int pinB, int pinSwitch)
-    : encoder(pinA, pinB), button(pinSwitch)
+    : encoder(pinA, pinB, RotaryEncoder::LatchMode::TWO03), button(pinSwitch)
 {
-  button.attachClick([](void *scope) { ((OneRotaryEncoder *) scope)->Clicked();}, this);
-  button.attachDoubleClick([](void *scope) { ((OneRotaryEncoder *) scope)->DoubleClicked();}, this);
-  button.attachLongPressStart([](void *scope) { ((OneRotaryEncoder *) scope)->LongPressed();}, this);
-  encoder.setPosition(startValue);
+  //button.attachClick([](void *scope) { ((OneRotaryEncoder *) scope)->Clicked();}, this);
+  //button.attachDoubleClick([](void *scope) { ((OneRotaryEncoder *) scope)->DoubleClicked();}, this);
+  //button.attachLongPressStart([](void *scope) { ((OneRotaryEncoder *) scope)->LongPressed();}, this);
+  //encoder.setPosition(startValue);
 }
 
 void OneRotaryEncoder::Clicked()
 {
-  switchState = EncoderSwitchState::Clicked;
+  switchState = EncoderSwitchPress::Clicked;
+  hasNewSwitchState = true;
 }
 
 void OneRotaryEncoder::DoubleClicked()
 {
-  switchState = EncoderSwitchState::DoubleClicked;
+  switchState = EncoderSwitchPress::DoubleClicked;
+  hasNewSwitchState = true;
 }
 
 void OneRotaryEncoder::LongPressed()
 {
-  switchState = EncoderSwitchState::LongPressed;
+  switchState = EncoderSwitchPress::LongPressed;
+  hasNewSwitchState = true;
 }
 
-int OneRotaryEncoder::GetPosition()
+EncoderPositionState OneRotaryEncoder::GetPosition()
 {
-  int position = lastPosition;
-  lastPosition = -1;
-  return position;
+  EncoderPositionState state;
+  state.position = lastPosition;
+  state.hasNewPosition = hasNewPosition;
+  hasNewPosition = false;
+  return state;  
 }
 
 EncoderSwitchState OneRotaryEncoder::GetSwitchState()
 {
-  EncoderSwitchState state = switchState;
-  switchState = EncoderSwitchState::None;
+  EncoderSwitchState state;
+  state.state = switchState;
+  state.hasNewState = hasNewSwitchState;
+  hasNewSwitchState = false;
   return state;
 }
 
@@ -43,10 +50,30 @@ void OneRotaryEncoder::Tick()
   encoder.tick();
   button.tick();
 
-  int newPosition = encoder.getPosition();
+  long newPosition = encoder.getPosition() * 4;
+
+  if (newPosition < 0)
+  {
+    encoder.setPosition(0);
+    newPosition = 0;
+  }
+
+  if (newPosition > 128)
+  {
+    encoder.setPosition(128);
+    newPosition = 128;
+  }
+
+  
   if (lastPosition != newPosition)
   {
-    lastPosition = newPosition; // CalculateAcceleration(lastPosition, newPosition);
+    lastPosition = newPosition;     //CalculateAcceleration(lastPosition, newPosition);
+    //encoder.setPosition(lastPosition);
+#ifndef ENABLE_MIDI
+    Serial.print("Encoder: ");
+    Serial.println(lastPosition);
+#endif
+    hasNewPosition = true;
   }
 }
 
