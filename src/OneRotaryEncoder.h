@@ -3,25 +3,30 @@
 #include <OneButton.h>
 #include <RotaryEncoder.h>
 
+enum EncoderSwitchState {
+    None,
+    Clicked,
+    DoubleClicked,
+    LongPressed
+};
+
 class OneRotaryEncoder {
 public:
     
     OneRotaryEncoder(int startValue, int pinA, int pinB, int pinSwitch);
-    void AttachRotate(std::function<void(int)> encoderCallback);
-    void AttachClick(callbackFunction switchCallback);
-    void AttachClickWithState(std::function<void(int)> clickWithStateCallback);
-    void AttachLongPressStart(callbackFunction switchCallback);
     void Tick();
-    int GetPosition() { return lastPosition; }
+    int GetPosition();
+    EncoderSwitchState GetSwitchState();
 
 private:
     OneButton button;
     RotaryEncoder encoder;
+
+    int lastPosition = -1;
+    EncoderSwitchState switchState = EncoderSwitchState::None;
+
+    void Clicked();
+    void DoubleClicked();
+    void LongPressed();
     int CalculateAcceleration(int oldPos, int newPos);
-    std::function<void(int)> encoderCallback;
-    std::function<void(int)> clickWithStateCallback;
-
-    static void ButtonStateChange(void* pEncoder);
-
-    int lastPosition;
 };

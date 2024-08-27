@@ -3,49 +3,51 @@
 OneRotaryEncoder::OneRotaryEncoder(int startValue, int pinA, int pinB, int pinSwitch)
     : encoder(pinA, pinB), button(pinSwitch)
 {
+  button.attachClick([](void *scope) { ((OneRotaryEncoder *) scope)->Clicked();}, this);
+  button.attachDoubleClick([](void *scope) { ((OneRotaryEncoder *) scope)->DoubleClicked();}, this);
+  button.attachLongPressStart([](void *scope) { ((OneRotaryEncoder *) scope)->LongPressed();}, this);
   encoder.setPosition(startValue);
 }
 
-void OneRotaryEncoder::AttachRotate(std::function<void(int)> callback)
+void OneRotaryEncoder::Clicked()
 {
-  encoderCallback = callback;
+  switchState = EncoderSwitchState::Clicked;
 }
 
-void OneRotaryEncoder::AttachClick(callbackFunction callback)
+void OneRotaryEncoder::DoubleClicked()
 {
-  button.attachClick(callback);
+  switchState = EncoderSwitchState::DoubleClicked;
 }
 
-void OneRotaryEncoder::AttachLongPressStart(callbackFunction callback)
+void OneRotaryEncoder::LongPressed()
 {
-  button.attachLongPressStart(callback);
+  switchState = EncoderSwitchState::LongPressed;
 }
 
-void OneRotaryEncoder::AttachClickWithState(std::function<void(int)> callback)
+int OneRotaryEncoder::GetPosition()
 {
-  clickWithStateCallback = callback;
-  button.attachClick(ButtonStateChange, this);
+  int position = lastPosition;
+  lastPosition = -1;
+  return position;
 }
 
-void OneRotaryEncoder::ButtonStateChange(void *pEncoder)
+EncoderSwitchState OneRotaryEncoder::GetSwitchState()
 {
-  OneRotaryEncoder *encoder = (OneRotaryEncoder *)pEncoder;
-  encoder->clickWithStateCallback(encoder->lastPosition);
+  EncoderSwitchState state = switchState;
+  switchState = EncoderSwitchState::None;
+  return state;
 }
 
 void OneRotaryEncoder::Tick()
 {
   encoder.tick();
+  button.tick();
+
   int newPosition = encoder.getPosition();
   if (lastPosition != newPosition)
   {
     lastPosition = newPosition; // CalculateAcceleration(lastPosition, newPosition);
-    if (encoderCallback != nullptr)
-    {
-      encoderCallback(lastPosition);
-    }
   }
-  button.tick();
 }
 
 int OneRotaryEncoder::CalculateAcceleration(int lastPos, int newPos)
