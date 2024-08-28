@@ -25,7 +25,7 @@ void processEvents()
 void loop()
 {
   processEvents();
-  audioProc.Analyse();
+  audioProc.Analyse(processEvents);
   
   processEvents();
   deckLight.DisplayAudio(audioProc.bandValues);

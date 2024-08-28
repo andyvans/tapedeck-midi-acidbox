@@ -44,7 +44,7 @@ MidiController::MidiController()
   // buttons[++buttonCount] = button4;
 
   // Encoder 1
-  auto encoder1 = new OneRotaryEncoder(255, ROTARY_ENCODER_1_A_PIN, ROTARY_ENCODER_1_B_PIN, ROTARY_ENCODER_1_SW_PIN);
+  auto encoder1 = new OneRotaryEncoder(127, 0, 127, ROTARY_ENCODER_1_A_PIN, ROTARY_ENCODER_1_B_PIN, ROTARY_ENCODER_1_SW_PIN);
   // encoder1->AttachRotate([](int pos) {
   //   SendControlChange(CC_808_VOLUME, pos, DRUM_MIDI_CHAN);
   // });
@@ -131,30 +131,32 @@ void MidiController::ProcessAudioControl()
   //auto encoderPos2 = encoders[1]->GetPosition();
 
 #ifndef ENABLE_MIDI
+  if (encoderSwitch1.hasNewState || encoderPos1.hasNewPosition)
+  {
     Serial.print("Encoder switch: ");
     Serial.print(encoderSwitch1.hasNewState);
     Serial.print(encoderSwitch1.state);
-    Serial.print(" Encoder position: ");
+    Serial.print(" Encoder new: ");
     Serial.print(encoderPos1.hasNewPosition);
+    Serial.print(" Encoder position: ");
     Serial.print(encoderPos1.position);
     Serial.println();
+  }
 #endif
-
-  
 
   switch (midiState)
   {
   case MidiControlState::Control0:
     if (encoderSwitch1.hasNewState)
     {
-      if (encoderSwitch1.state == EncoderSwitchPress::Clicked)
-      {
-        SendControlChange(CC_808_VOLUME, 0, DRUM_MIDI_CHAN);
-      }
-      else if (encoderSwitch1.state == EncoderSwitchPress::LongPressed)
-      {
-        SendControlChange(CC_808_VOLUME, 255, DRUM_MIDI_CHAN);
-      }
+      // if (encoderSwitch1.state == EncoderSwitchPress::Clicked)
+      // {
+      //   SendControlChange(CC_808_VOLUME, 0, DRUM_MIDI_CHAN);
+      // }
+      // else if (encoderSwitch1.state == EncoderSwitchPress::LongPressed)
+      // {
+      //   SendControlChange(CC_808_VOLUME, 127, DRUM_MIDI_CHAN);
+      // }
       //SendControlChange(CC_808_VOLUME, 0, DRUM_MIDI_CHAN);
     }
     // if (encoderSwitch2.hasNewState)
@@ -222,7 +224,7 @@ void MidiController::SendProgramChange(int program, int channel)
 void MidiController::SendControlChange(uint8_t program, uint8_t value, uint8_t channel)
 {
   // Midi values are 0-127. Rotary encoder values are 0-255.
-  int midiValue = map(value, 0, 255, 0, 127);
+  int midiValue = value;//map(value, 0, 255, 0, 127);
 
 #ifdef ENABLE_MIDI
   MIDI.sendControlChange(number, midiValue, channel);

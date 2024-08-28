@@ -6,13 +6,13 @@ AudioProc::AudioProc()
   FFT = ArduinoFFT<float>(vReal, vImag, AudioSamples, AudioSamplingFreq);
 }
 
-void AudioProc::Analyse()
+void AudioProc::Analyse(tickCallbackFunction tickCallback)
 {
-  SampleAudio();
+  SampleAudio(tickCallback);
   AnalyseAudio();
 }
 
-void AudioProc::SampleAudio()
+void AudioProc::SampleAudio(tickCallbackFunction tickCallback)
 {
   // Sample the audio pin
   for (int i = 0; i < AudioSamples; i++)
@@ -22,7 +22,8 @@ void AudioProc::SampleAudio()
     vImag[i] = 0;
     while ((micros() - newTime) < sampling_period_us)
     { 
-      // Wait for more audio
+      // Wait for more audio. Use tick callback to process hardware events
+      tickCallback();
     }
   }
 }

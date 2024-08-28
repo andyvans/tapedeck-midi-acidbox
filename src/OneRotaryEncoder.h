@@ -23,8 +23,9 @@ struct EncoderPositionState {
 class OneRotaryEncoder {
 public:
     
-    OneRotaryEncoder(int startValue, int pinA, int pinB, int pinSwitch);
+    OneRotaryEncoder(int startValue, int minValue, int maxValue, int pinA, int pinB, int pinSwitch);
     void Tick();
+    void SetPosition(int position);
     EncoderPositionState GetPosition();
     EncoderSwitchState GetSwitchState();
 
@@ -42,4 +43,9 @@ private:
     void DoubleClicked();
     void LongPressed();
     int CalculateAcceleration(int oldPos, int newPos);
+
+    int rotarySteps = 16;
+    int rotaryInitial = 65;
+    int rotaryMin = 0;
+    int rotaryMax = 127;
 };

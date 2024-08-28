@@ -8,16 +8,18 @@
 #define AudioSamplingFreq 40000 // Hz, must be 40000 or less due to ADC conversion time. Determines maximum frequency that can be analysed by the FFT Fmax=sampleF/2.
 #define AudioNoise 500 // Used as a crude noise filter, values below this are ignored
 
+typedef void (*tickCallbackFunction)(void);
+
 class AudioProc
 {
 public:
   AudioProc();
 
-  void Analyse();
+  void Analyse(tickCallbackFunction tickCallback);
   int bandValues[NUM_BANDS] = {0};
 
 private:
-  void SampleAudio();
+  void SampleAudio(tickCallbackFunction tickCallback);
   void AnalyseAudio();
     
   unsigned int sampling_period_us;  
