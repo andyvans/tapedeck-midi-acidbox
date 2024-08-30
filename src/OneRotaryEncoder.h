@@ -23,7 +23,7 @@ struct EncoderPositionState {
 class OneRotaryEncoder {
 public:
     
-    OneRotaryEncoder(int startValue, int minValue, int maxValue, int pinA, int pinB, int pinSwitch);
+    OneRotaryEncoder(int pinA, int pinB, int pinSwitch, int initialValue, int minValue = 0, int maxValue = 127);
     void Tick();
     void SetPosition(int position);
     EncoderPositionState GetPosition();

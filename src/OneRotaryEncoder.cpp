@@ -1,12 +1,12 @@
 #include "OneRotaryEncoder.h"
 
-OneRotaryEncoder::OneRotaryEncoder(int startValue, int minValue, int maxValue, int pinA, int pinB, int pinSwitch)
+OneRotaryEncoder::OneRotaryEncoder(int pinA, int pinB, int pinSwitch, int initialValue, int minValue, int maxValue)
     : encoder(pinA, pinB, RotaryEncoder::LatchMode::TWO03), button(pinSwitch)
 {
-  rotaryInitial = startValue;
+  rotaryInitial = initialValue;
   rotaryMin = minValue;
   rotaryMax = maxValue;
-  SetPosition(startValue);
+  SetPosition(initialValue);
 
   button.attachClick([](void *scope) { ((OneRotaryEncoder *) scope)->Clicked();}, this);
   button.attachDoubleClick([](void *scope) { ((OneRotaryEncoder *) scope)->DoubleClicked();}, this);

@@ -7,18 +7,18 @@
 //#define ENABLE_MIDI
 #define MIDI_CONTROLLER_MAX_DEVICES 20
 
-enum MidiControlState
+enum AudioControlMode
 {
-  Control0,
-  Control1,
-  Control2,
-  Control3,
+  Mode1,
+  Mode2,
+  Mode3,
+  Mode4,
 };
 
-class MidiController
+class AudioControls
 {
 public:
-  MidiController();
+  AudioControls();
   void Setup();
   void Tick();
   
@@ -26,7 +26,7 @@ private:
   OneButton* buttons[MIDI_CONTROLLER_MAX_DEVICES] = {};
   OneRotaryEncoder* encoders[MIDI_CONTROLLER_MAX_DEVICES] = {};
 
-  MidiControlState ReadSwitchStates();
+  AudioControlMode GetControlSet();
 
   void ProcessAudioControl();
 

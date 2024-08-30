@@ -2,11 +2,11 @@
 #include "constants.h"
 #include "DeckLight.h"
 #include "AudioProc.h"
-#include "MidiController.h"
+#include "AudioControls.h"
 
 DeckLight deckLight;
 AudioProc audioProc;
-MidiController midiController;
+AudioControls midiController;
 
 void setup()
 {
