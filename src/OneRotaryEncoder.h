@@ -44,7 +44,7 @@ private:
     void LongPressed();
     int CalculateAcceleration(int oldPos, int newPos);
 
-    int rotarySteps = 16;
+    int rotarySteps = 4;
     int rotaryInitial = 65;
     int rotaryMin = 0;
     int rotaryMax = 127;
