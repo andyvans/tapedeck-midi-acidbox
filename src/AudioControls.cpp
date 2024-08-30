@@ -15,6 +15,8 @@ AudioControls::AudioControls()
   int buttonCount = -1;
   int encoderCount = -1;
 
+  // todo create midi control class with preset midi cc values
+
   // REWIND button
   auto button1 = new OneButton(REWIND_BUTTON_PIN, true);
   button1-> attachClick([](void *scope) {
