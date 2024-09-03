@@ -24,42 +24,42 @@ AudioControls::AudioControls()
   }, this);
   buttons[++buttonCount] = button1;
 
-  // // FAST FORWARD button
-  // auto button2 = new OneButton(FAST_FORWARD_BUTTON_PIN, true);
-  // button2-> attachClick([]() {
-  //   SendControlChange(CC_303_VOLUME, 0, SYNTH1_MIDI_CHAN);
-  // });
-  // buttons[++buttonCount] = button2;
+  // FAST FORWARD button
+  auto button2 = new OneButton(FAST_FORWARD_BUTTON_PIN, true);
+  button2-> attachClick([](void *scope) {
+    ((AudioControls*)scope)->SendControlChange(CC_303_VOLUME, 0, SYNTH1_MIDI_CHAN);
+  }, this);
+  buttons[++buttonCount] = button2;
 
-  // // PLAY button
-  // auto button3 = new OneButton(PLAY_BUTTON_PIN, true);
-  // button3-> attachClick([]() {
-  //   SendControlChange(CC_303_VOLUME, 0, SYNTH2_MIDI_CHAN);
-  // });
-  // buttons[++buttonCount] = button3;
+  // PLAY button
+  auto button3 = new OneButton(PLAY_BUTTON_PIN, true);
+  button3-> attachClick([](void *scope) {
+    ((AudioControls*)scope)->SendControlChange(CC_303_VOLUME, 0, SYNTH2_MIDI_CHAN);
+  }, this);
+  buttons[++buttonCount] = button3;
 
-  // // STOP button
-  // auto button4 = new OneButton(STOP_BUTTON_PIN, true);
-  // button4-> attachClick([]() {
-  //   SendControlChange(CC_303_VOLUME, 0, SYNTH2_MIDI_CHAN);
-  // });
-  // buttons[++buttonCount] = button4;
+  // STOP button
+  auto button4 = new OneButton(STOP_BUTTON_PIN, true);
+  button4-> attachClick([](void *scope) {
+    ((AudioControls*)scope)->SendControlChange(CC_303_VOLUME, 0, SYNTH2_MIDI_CHAN);
+  }, this);
+  buttons[++buttonCount] = button4;
 
   // Encoder 1
   auto encoder1 = new OneRotaryEncoder(ROTARY_ENCODER_1_A_PIN, ROTARY_ENCODER_1_B_PIN, ROTARY_ENCODER_1_SW_PIN, 127);
   encoders[++encoderCount] = encoder1;
 
   // Encoder 2
-  //auto encoder2 = new OneRotaryEncoder(255, ROTARY_ENCODER_2_A_PIN, ROTARY_ENCODER_2_B_PIN, ROTARY_ENCODER_2_SW_PIN);
-  //encoders[++encoderCount] = encoder2;
+  auto encoder2 = new OneRotaryEncoder(ROTARY_ENCODER_2_A_PIN, ROTARY_ENCODER_2_B_PIN, ROTARY_ENCODER_2_SW_PIN, 127);
+  encoders[++encoderCount] = encoder2;
 
   // Encoder 3
-  //auto encoder3 = new OneRotaryEncoder(255, ROTARY_ENCODER_3_A_PIN, ROTARY_ENCODER_3_B_PIN, ROTARY_ENCODER_3_SW_PIN);
-  //encoders[++encoderCount] = encoder3;
+  auto encoder3 = new OneRotaryEncoder(ROTARY_ENCODER_3_A_PIN, ROTARY_ENCODER_3_B_PIN, ROTARY_ENCODER_3_SW_PIN, 127);
+  encoders[++encoderCount] = encoder3;
   
   // Encoder 4
-  //auto encoder4 = new OneRotaryEncoder(255, ROTARY_ENCODER_4_A_PIN, ROTARY_ENCODER_4_B_PIN, ROTARY_ENCODER_4_SW_PIN);
-  //encoders[++encoderCount] = encoder4;
+  auto encoder4 = new OneRotaryEncoder(ROTARY_ENCODER_4_A_PIN, ROTARY_ENCODER_4_B_PIN, ROTARY_ENCODER_4_SW_PIN, 127);
+  encoders[++encoderCount] = encoder4;
 }
 
 void AudioControls::Setup()
@@ -86,25 +86,22 @@ void AudioControls::Tick()
 
 void AudioControls::ProcessAudioControl()
 {
-  AudioControlMode midiState = AudioControlMode::Mode1; //ReadSwitchStates();
+  UpdateMidiState();
 
-  auto encoderSwitch1 = encoders[0]->GetSwitchState();
+  //auto encoderSwitch1 = encoders[0]->GetSwitchState();
   //auto encoderSwitch2 = encoders[1]->GetSwitchState();
   //auto encoderSwitch3 = encoders[2]->GetSwitchState();
   //auto encoderSwitch4 = encoders[3]->GetSwitchState();
 
   auto encoderPos1 = encoders[0]->GetPosition();  
-  //auto encoderPos2 = encoders[1]->GetPosition();
+  auto encoderPos2 = encoders[1]->GetPosition();
+  auto encoderPos3 = encoders[2]->GetPosition();
+  auto encoderPos4 = encoders[3]->GetPosition();
 
 #ifndef ENABLE_MIDI
-  if (encoderSwitch1.hasNewState || encoderPos1.hasNewPosition)
+  if (encoderPos1.hasNewPosition)
   {
-    Serial.print("Encoder switch: ");
-    Serial.print(encoderSwitch1.hasNewState);
-    Serial.print(encoderSwitch1.state);
-    Serial.print(" Encoder new: ");
-    Serial.print(encoderPos1.hasNewPosition);
-    Serial.print(" Encoder position: ");
+    Serial.print("Encoder: ");
     Serial.print(encoderPos1.position);
     Serial.println();
   }
@@ -113,40 +110,16 @@ void AudioControls::ProcessAudioControl()
   switch (midiState)
   {
   case AudioControlMode::Mode1:
-    if (encoderSwitch1.hasNewState)
-    {
-      // if (encoderSwitch1.state == EncoderSwitchPress::Clicked)
-      // {
-      //   SendControlChange(CC_808_VOLUME, 0, DRUM_MIDI_CHAN);
-      // }
-      // else if (encoderSwitch1.state == EncoderSwitchPress::LongPressed)
-      // {
-      //   SendControlChange(CC_808_VOLUME, 127, DRUM_MIDI_CHAN);
-      // }
-      //SendControlChange(CC_808_VOLUME, 0, DRUM_MIDI_CHAN);
-    }
-    // if (encoderSwitch2.hasNewState)
-    // {
-    //   if (encoderSwitch2.state == EncoderSwitchPress::Clicked)
-    //   {
-    //     SendControlChange(CC_303_VOLUME, 0, SYNTH1_MIDI_CHAN);
-    //   }
-    //   else if (encoderSwitch2.state == EncoderSwitchPress::LongPressed)
-    //   {
-    //     SendControlChange(CC_303_VOLUME, 255, SYNTH1_MIDI_CHAN);
-    //   }
-    // }
-
-    if (encoderPos1.hasNewPosition)
-    {
-      SendControlChange(CC_808_VOLUME, encoderPos1.position, DRUM_MIDI_CHAN);
-    }    
-    // if (encoderPos2.hasNewPosition)  
-    // {
-    //   SendControlChange(CC_303_VOLUME, encoderPos2.position, SYNTH1_MIDI_CHAN);
-    // }
+    if (encoderPos1.hasNewPosition) SendControlChange(CC_808_VOLUME, encoderPos1.position, DRUM_MIDI_CHAN);
+    if (encoderPos2.hasNewPosition) SendControlChange(CC_303_VOLUME, encoderPos2.position, SYNTH1_MIDI_CHAN);
+    if (encoderPos3.hasNewPosition) SendControlChange(CC_303_VOLUME, encoderPos3.position, SYNTH2_MIDI_CHAN);
+    if (encoderPos4.hasNewPosition) SendControlChange(CC_ANY_REVERB_TIME, encoderPos4.position, SYNTH1_MIDI_CHAN);
     break;
   case AudioControlMode::Mode2:
+    if (encoderPos1.hasNewPosition) SendControlChange(CC_808_DELAY_SEND, encoderPos1.position, DRUM_MIDI_CHAN);
+    if (encoderPos2.hasNewPosition) SendControlChange(CC_303_DELAY_SEND, encoderPos2.position, SYNTH1_MIDI_CHAN);
+    if (encoderPos3.hasNewPosition) SendControlChange(CC_303_DELAY_SEND, encoderPos3.position, SYNTH2_MIDI_CHAN);
+    if (encoderPos4.hasNewPosition) SendControlChange(CC_ANY_REVERB_TIME, encoderPos4.position, SYNTH1_MIDI_CHAN);
     break;
   }
 
@@ -164,27 +137,38 @@ void AudioControls::ProcessAudioControl()
   // SendControlChange(CC_ANY_REVERB_TIME, 255, SYNTH1_MIDI_CHAN);
 }
 
-AudioControlMode AudioControls::GetControlSet()
+void AudioControls::UpdateMidiState()
 {
   bool leftSwitchState = digitalRead(LEFT_SWITCH_PIN) == HIGH;
   bool rightSwitchState = digitalRead(RIGHT_SWITCH_PIN) == HIGH;
 
+  auto newMidiState = midiState;
   if (leftSwitchState && rightSwitchState)
   {
-    return AudioControlMode::Mode4;
+    newMidiState = AudioControlMode::Mode4;
   }
   else if (leftSwitchState)
   {
-    return AudioControlMode::Mode2;
+    newMidiState = AudioControlMode::Mode2;
   }
   else if (rightSwitchState)
   {
-    return AudioControlMode::Mode3;
+    newMidiState = AudioControlMode::Mode3;
   }
   else
   {
-    return AudioControlMode::Mode1;
+    newMidiState = AudioControlMode::Mode1;
   }
+
+#ifndef ENABLE_MIDI
+  if (newMidiState != midiState)
+  {
+    Serial.print("Midi state: ");
+    Serial.print(newMidiState);
+    Serial.println();
+  }
+#endif
+  midiState = newMidiState;
 }
 
 void AudioControls::SendProgramChange(int program, int channel)

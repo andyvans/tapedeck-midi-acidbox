@@ -26,10 +26,10 @@ private:
   OneButton* buttons[MIDI_CONTROLLER_MAX_DEVICES] = {};
   OneRotaryEncoder* encoders[MIDI_CONTROLLER_MAX_DEVICES] = {};
 
-  AudioControlMode GetControlSet();
-
+  void UpdateMidiState();
   void ProcessAudioControl();
-
   void SendProgramChange(int program, int channel);
   void SendControlChange(uint8_t number, uint8_t value, uint8_t channel);
+
+  AudioControlMode midiState = AudioControlMode::Mode1;
 };

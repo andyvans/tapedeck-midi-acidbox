@@ -28,10 +28,10 @@ private:
   void OutrunPeak(int band);
   void Waterfall(int bandValues[], int band);
   
-  static void ChangeTheme();
-  static void StartAutoMode();  
-  static void BrightnessOff();
-  static void ChangeBrightness();
+  void ChangeTheme();
+  void StartAutoMode();  
+  void BrightnessOff();
+  void ChangeBrightness();
 
   int amplitude = 27000;
   OneButton modeBtn;
