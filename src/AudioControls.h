@@ -32,4 +32,6 @@ private:
   void SendControlChange(uint8_t number, uint8_t value, uint8_t channel);
 
   AudioControlMode midiState = AudioControlMode::Mode1;
+  bool leftSwitchState = false;
+  bool rightSwitchState = false;
 };

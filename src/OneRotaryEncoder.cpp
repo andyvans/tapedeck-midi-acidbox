@@ -9,14 +9,21 @@ OneRotaryEncoder::OneRotaryEncoder(int pinA, int pinB, int pinSwitch, int initia
   SetPosition(initialValue);
 
   button.attachClick([](void *scope) { ((OneRotaryEncoder *) scope)->Clicked();}, this);
-  button.attachDoubleClick([](void *scope) { ((OneRotaryEncoder *) scope)->DoubleClicked();}, this);
   button.attachLongPressStart([](void *scope) { ((OneRotaryEncoder *) scope)->LongPressed();}, this);  
 }
 
 void OneRotaryEncoder::Clicked()
 {
-  switchState = EncoderSwitchPress::Clicked;
-  SetPosition(rotaryMin);
+  if (switchState != EncoderSwitchPress::Clicked)
+  {
+    switchState = EncoderSwitchPress::Clicked;
+    SetPosition(rotaryMin);    
+  }
+  else
+  {
+    switchState = EncoderSwitchPress::None;
+    SetPosition(rotaryInitial);
+  }  
   hasNewSwitchState = true;
 }
 
