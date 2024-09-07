@@ -17,19 +17,19 @@
 // Rotary encoder pins
 #define ROTARY_ENCODER_1_A_PIN    17
 #define ROTARY_ENCODER_1_B_PIN    16
-#define ROTARY_ENCODER_1_SW_PIN   15
+#define ROTARY_ENCODER_1_SW_PIN   15 // Theme change
 
-#define ROTARY_ENCODER_2_A_PIN    3
-#define ROTARY_ENCODER_2_B_PIN    8
+#define ROTARY_ENCODER_2_A_PIN    8
+#define ROTARY_ENCODER_2_B_PIN    3
 #define ROTARY_ENCODER_2_SW_PIN   18
 
-#define ROTARY_ENCODER_3_A_PIN    11
-#define ROTARY_ENCODER_3_B_PIN    10
+#define ROTARY_ENCODER_3_A_PIN    10
+#define ROTARY_ENCODER_3_B_PIN    11
 #define ROTARY_ENCODER_3_SW_PIN   9
 
-#define ROTARY_ENCODER_4_A_PIN    14
-#define ROTARY_ENCODER_4_B_PIN    13
-#define ROTARY_ENCODER_4_SW_PIN   12
+#define ROTARY_ENCODER_4_A_PIN    13
+#define ROTARY_ENCODER_4_B_PIN    14
+#define ROTARY_ENCODER_4_SW_PIN   12 
 
 // Button pins
 #define RECORD_BUTTON_PIN         21 // Change theme color
@@ -39,5 +39,5 @@
 #define STOP_BUTTON_PIN           36 // Button 4
 //#define PAUSE_PIN               RST // Reset AcidBox
 
-#define LEFT_SWITCH_PIN            37 // Left switch
-#define RIGHT_SWITCH_PIN           38 // Right switch
+#define LEFT_SWITCH_PIN            36 // Left switch
+#define RIGHT_SWITCH_PIN           37 // Right switch

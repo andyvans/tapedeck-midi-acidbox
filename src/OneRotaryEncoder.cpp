@@ -1,5 +1,14 @@
 #include "OneRotaryEncoder.h"
 
+OneRotaryEncoder::OneRotaryEncoder(int pinA, int pinB, int initialValue, int minValue, int maxValue)
+    : encoder(pinA, pinB, RotaryEncoder::LatchMode::TWO03)
+{
+  rotaryInitial = initialValue;
+  rotaryMin = minValue;
+  rotaryMax = maxValue;
+  SetPosition(initialValue);
+}
+
 OneRotaryEncoder::OneRotaryEncoder(int pinA, int pinB, int pinSwitch, int initialValue, int minValue, int maxValue)
     : encoder(pinA, pinB, RotaryEncoder::LatchMode::TWO03), button(pinSwitch)
 {

@@ -13,7 +13,7 @@ bool DeckLight::autoChangePatterns = false;
 const int DeckLight::BrightnessSettings[] = {5, 30, 70};
 
 DeckLight::DeckLight() : 
-  modeBtn(RECORD_BUTTON_PIN)
+  modeBtn(ROTARY_ENCODER_1_SW_PIN)
 {
   matrix = new FastLED_NeoMatrix(matrixLeds, DeckLightMatrixWidth, DeckLightMatrixHeight, 
     NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_ROWS + NEO_MATRIX_ZIGZAG + NEO_TILE_TOP + NEO_TILE_LEFT + NEO_TILE_ROWS);

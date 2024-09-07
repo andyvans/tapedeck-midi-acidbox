@@ -8,8 +8,8 @@ MIDI_CREATE_INSTANCE(HardwareSerial, Serial, MIDI);
 AudioControls::AudioControls()
 {
   // Set switch pins to digital input
-  pinMode(LEFT_SWITCH_PIN, INPUT);
-  pinMode(RIGHT_SWITCH_PIN, INPUT);
+  pinMode(LEFT_SWITCH_PIN, INPUT_PULLUP);
+  pinMode(RIGHT_SWITCH_PIN, INPUT_PULLUP);
 
   // Setup encoders and buttons
   int buttonCount = -1;
@@ -55,38 +55,20 @@ AudioControls::AudioControls()
   }, this);
   buttons[++buttonCount] = button4;
 
-  // LEFT switch
-  auto button5 = new OneButton(LEFT_SWITCH_PIN, true);
-  button5->attachLongPressStart([](void *scope) {
-    ((AudioControls*)scope)->leftSwitchState = true;
-  }, this);
-  button5->attachLongPressStop([](void *scope) {
-    ((AudioControls*)scope)->leftSwitchState = false;
-  }, this);
-
-  // RIGHT switch
-  auto button6 = new OneButton(RIGHT_SWITCH_PIN, true);
-  button6->attachLongPressStart([](void *scope) {
-    ((AudioControls*)scope)->rightSwitchState = true;
-  }, this);
-  button6->attachLongPressStop([](void *scope) {
-    ((AudioControls*)scope)->rightSwitchState = false;
-  }, this);
-
-  // Encoder 1
-  auto encoder1 = new OneRotaryEncoder(ROTARY_ENCODER_1_A_PIN, ROTARY_ENCODER_1_B_PIN, ROTARY_ENCODER_1_SW_PIN, 127);
+   // Encoder 1
+  auto encoder1 = new OneRotaryEncoder(ROTARY_ENCODER_1_A_PIN, ROTARY_ENCODER_1_B_PIN, 64, 0, 127);
   encoders[++encoderCount] = encoder1;
 
   // Encoder 2
-  auto encoder2 = new OneRotaryEncoder(ROTARY_ENCODER_2_A_PIN, ROTARY_ENCODER_2_B_PIN, ROTARY_ENCODER_2_SW_PIN, 127);
+  auto encoder2 = new OneRotaryEncoder(ROTARY_ENCODER_2_A_PIN, ROTARY_ENCODER_2_B_PIN, ROTARY_ENCODER_2_SW_PIN, 64, 0, 127);
   encoders[++encoderCount] = encoder2;
 
   // Encoder 3
-  auto encoder3 = new OneRotaryEncoder(ROTARY_ENCODER_3_A_PIN, ROTARY_ENCODER_3_B_PIN, ROTARY_ENCODER_3_SW_PIN, 127);
+  auto encoder3 = new OneRotaryEncoder(ROTARY_ENCODER_3_A_PIN, ROTARY_ENCODER_3_B_PIN, ROTARY_ENCODER_3_SW_PIN, 64, 0, 127);
   encoders[++encoderCount] = encoder3;
   
   // Encoder 4
-  auto encoder4 = new OneRotaryEncoder(ROTARY_ENCODER_4_A_PIN, ROTARY_ENCODER_4_B_PIN, ROTARY_ENCODER_4_SW_PIN, 127);
+  auto encoder4 = new OneRotaryEncoder(ROTARY_ENCODER_4_A_PIN, ROTARY_ENCODER_4_B_PIN, ROTARY_ENCODER_4_SW_PIN, 64, 0, 127);
   encoders[++encoderCount] = encoder4;
 }
 
@@ -114,70 +96,62 @@ void AudioControls::Tick()
 
 void AudioControls::ProcessAudioControl()
 {
-  UpdateMidiState();
-
+  UpdateMidiState();  
   auto encoderPos1 = encoders[0]->GetPosition();  
   auto encoderPos2 = encoders[1]->GetPosition();
   auto encoderPos3 = encoders[2]->GetPosition();
   auto encoderPos4 = encoders[3]->GetPosition();
 
-#ifndef ENABLE_MIDI
-  if (encoderPos1.hasNewPosition)
-  {
-    Serial.print("Encoder: ");
-    Serial.print(encoderPos1.position);
-    Serial.println();
-  }
-#endif
-
   switch (midiState)
   {
-  case AudioControlMode::Mode1:
+  case AudioControlMode::Mode0:
     if (encoderPos1.hasNewPosition) SendControlChange(CC_808_VOLUME, encoderPos1.position, DRUM_MIDI_CHAN);
     if (encoderPos2.hasNewPosition) SendControlChange(CC_303_VOLUME, encoderPos2.position, SYNTH1_MIDI_CHAN);
     if (encoderPos3.hasNewPosition) SendControlChange(CC_303_VOLUME, encoderPos3.position, SYNTH2_MIDI_CHAN);
     if (encoderPos4.hasNewPosition) SendControlChange(CC_ANY_REVERB_TIME, encoderPos4.position, SYNTH1_MIDI_CHAN);
     break;
-  case AudioControlMode::Mode2:
+  case AudioControlMode::Mode1:
     if (encoderPos1.hasNewPosition) SendControlChange(CC_808_DISTORTION, encoderPos1.position, DRUM_MIDI_CHAN);
     if (encoderPos2.hasNewPosition) SendControlChange(CC_303_DISTORTION, encoderPos2.position, SYNTH1_MIDI_CHAN);
     if (encoderPos3.hasNewPosition) SendControlChange(CC_ANY_DELAY_FB, encoderPos3.position, GLOBAL_MIDI_CHAN);
-    if (encoderPos4.hasNewPosition) SendControlChange(CC_ANY_REVERB_TIME, encoderPos4.position, GLOBAL_MIDI_CHAN);
+    if (encoderPos4.hasNewPosition) SendControlChange(CC_ANY_COMPRESSOR, encoderPos4.position, GLOBAL_MIDI_CHAN);
+    break;
+  case AudioControlMode::Mode2:
+    if (encoderPos1.hasNewPosition) SendControlChange(CC_808_VOLUME, encoderPos1.position, DRUM_MIDI_CHAN);
+    if (encoderPos2.hasNewPosition) SendControlChange(CC_303_VOLUME, encoderPos2.position, SYNTH1_MIDI_CHAN);
+    if (encoderPos3.hasNewPosition) SendControlChange(CC_303_VOLUME, encoderPos3.position, SYNTH2_MIDI_CHAN);
+    if (encoderPos4.hasNewPosition) SendControlChange(CC_ANY_REVERB_TIME, encoderPos4.position, SYNTH1_MIDI_CHAN);
+    break;
+  case AudioControlMode::Mode3:
+    if (encoderPos1.hasNewPosition) SendControlChange(CC_808_VOLUME, encoderPos1.position, DRUM_MIDI_CHAN);
+    if (encoderPos2.hasNewPosition) SendControlChange(CC_303_VOLUME, encoderPos2.position, SYNTH1_MIDI_CHAN);
+    if (encoderPos3.hasNewPosition) SendControlChange(CC_303_VOLUME, encoderPos3.position, SYNTH2_MIDI_CHAN);
+    if (encoderPos4.hasNewPosition) SendControlChange(CC_ANY_REVERB_TIME, encoderPos4.position, SYNTH1_MIDI_CHAN);
     break;
   }
-
-  // SendControlChange(CC_808_VOLUME, pos, DRUM_MIDI_CHAN);
-  // SendControlChange(CC_808_VOLUME, 0, DRUM_MIDI_CHAN);
-  // SendControlChange(CC_808_VOLUME, 255, DRUM_MIDI_CHAN);
-  // SendControlChange(CC_303_VOLUME, pos, SYNTH1_MIDI_CHAN);
-  // SendControlChange(CC_303_VOLUME, 0, SYNTH1_MIDI_CHAN);
-  // SendControlChange(CC_303_VOLUME, 255, SYNTH1_MIDI_CHAN);
-  // SendControlChange(CC_303_VOLUME, pos, SYNTH2_MIDI_CHAN);
-  // SendControlChange(CC_303_VOLUME, 0, SYNTH2_MIDI_CHAN);
-  // SendControlChange(CC_303_VOLUME, 255, SYNTH2_MIDI_CHAN);
-  // SendControlChange(CC_ANY_REVERB_TIME, pos, SYNTH1_MIDI_CHAN);
-  // SendControlChange(CC_ANY_REVERB_TIME, 0, SYNTH1_MIDI_CHAN);
-  // SendControlChange(CC_ANY_REVERB_TIME, 255, SYNTH1_MIDI_CHAN);
 }
 
 void AudioControls::UpdateMidiState()
 {
+  leftSwitchState = digitalRead(LEFT_SWITCH_PIN) == HIGH;
+  rightSwitchState = digitalRead(RIGHT_SWITCH_PIN) == HIGH;
+
   auto newMidiState = midiState;
   if (leftSwitchState && rightSwitchState)
   {
-    newMidiState = AudioControlMode::Mode4;
+    newMidiState = AudioControlMode::Mode3;
   }
   else if (leftSwitchState)
   {
-    newMidiState = AudioControlMode::Mode2;
+    newMidiState = AudioControlMode::Mode1;
   }
   else if (rightSwitchState)
   {
-    newMidiState = AudioControlMode::Mode3;
+    newMidiState = AudioControlMode::Mode0;
   }
   else
   {
-    newMidiState = AudioControlMode::Mode1;
+    newMidiState = AudioControlMode::Mode2;
   }
 
 #ifndef ENABLE_MIDI
@@ -210,7 +184,7 @@ void AudioControls::SendControlChange(uint8_t program, uint8_t value, uint8_t ch
   int midiValue = value;//map(value, 0, 255, 0, 127);
 
 #ifdef ENABLE_MIDI
-  MIDI.sendControlChange(number, midiValue, channel);
+  MIDI.sendControlChange(program, midiValue, channel);
 #else
   Serial.print("Control change:");
   Serial.print(program);
