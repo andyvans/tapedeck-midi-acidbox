@@ -16,46 +16,16 @@ AudioControls::AudioControls()
   int encoderCount = -1;
 
   // REWIND button
-  auto button1 = new OneButton(REWIND_BUTTON_PIN, true);  
-  button1->attachLongPressStart([](void *scope) {
-    ((AudioControls*)scope)->SendControlChange(CC_ANY_DELAY_FB, 127, DRUM_MIDI_CHAN);
-  }, this);
-  button1->attachLongPressStop([](void *scope) {
-    ((AudioControls*)scope)->SendControlChange(CC_ANY_DELAY_FB, 0, DRUM_MIDI_CHAN);
-  }, this);
-  buttons[++buttonCount] = button1;
+  // auto button1 = new OneButton(REWIND_BUTTON_PIN, true);  
+  // button1->attachLongPressStart([](void *scope) {
+  //   ((AudioControls*)scope)->SendControlChange(CC_ANY_DELAY_FB, 127, DRUM_MIDI_CHAN);
+  // }, this);
+  // button1->attachLongPressStop([](void *scope) {
+  //   ((AudioControls*)scope)->SendControlChange(CC_ANY_DELAY_FB, 0, DRUM_MIDI_CHAN);
+  // }, this);
+  // buttons[++buttonCount] = button1;
 
-  // FAST FORWARD button
-  auto button2 = new OneButton(FAST_FORWARD_BUTTON_PIN, true);
-  button2->attachLongPressStart([](void *scope) {
-    ((AudioControls*)scope)->SendControlChange(CC_ANY_DELAY_TIME, 127, DRUM_MIDI_CHAN);
-  }, this);
-  button2->attachLongPressStop([](void *scope) {
-    ((AudioControls*)scope)->SendControlChange(CC_ANY_DELAY_TIME, 0, DRUM_MIDI_CHAN);
-  }, this);
-  buttons[++buttonCount] = button2;
-
-  // PLAY button
-  auto button3 = new OneButton(PLAY_BUTTON_PIN, true);
-  button3->attachLongPressStart([](void *scope) {
-    ((AudioControls*)scope)->SendControlChange(CC_ANY_REVERB_TIME, 127, DRUM_MIDI_CHAN);
-  }, this);
-  button3->attachLongPressStop([](void *scope) {
-    ((AudioControls*)scope)->SendControlChange(CC_ANY_REVERB_TIME, 0, DRUM_MIDI_CHAN);
-  }, this);
-  buttons[++buttonCount] = button3;
-
-  // STOP button
-  auto button4 = new OneButton(STOP_BUTTON_PIN, true);
-  button4->attachLongPressStart([](void *scope) {
-    ((AudioControls*)scope)->SendControlChange(CC_ANY_COMPRESSOR, 127, DRUM_MIDI_CHAN);
-  }, this);
-  button4->attachLongPressStop([](void *scope) {
-    ((AudioControls*)scope)->SendControlChange(CC_ANY_COMPRESSOR, 0, DRUM_MIDI_CHAN);
-  }, this);
-  buttons[++buttonCount] = button4;
-
-   // Encoder 1
+  // Encoder 1
   auto encoder1 = new OneRotaryEncoder(ROTARY_ENCODER_1_A_PIN, ROTARY_ENCODER_1_B_PIN, 64, 0, 127);
   encoders[++encoderCount] = encoder1;
 
@@ -108,12 +78,12 @@ void AudioControls::ProcessAudioControl()
     if (encoderPos1.hasNewPosition) SendControlChange(CC_808_VOLUME, encoderPos1.position, DRUM_MIDI_CHAN);
     if (encoderPos2.hasNewPosition) SendControlChange(CC_303_VOLUME, encoderPos2.position, SYNTH1_MIDI_CHAN);
     if (encoderPos3.hasNewPosition) SendControlChange(CC_303_VOLUME, encoderPos3.position, SYNTH2_MIDI_CHAN);
-    if (encoderPos4.hasNewPosition) SendControlChange(CC_ANY_REVERB_TIME, encoderPos4.position, SYNTH1_MIDI_CHAN);
+    if (encoderPos4.hasNewPosition) SendControlChange(CC_ANY_DELAY_TIME, encoderPos4.position, SYNTH1_MIDI_CHAN);
     break;
   case AudioControlMode::Mode1:
     if (encoderPos1.hasNewPosition) SendControlChange(CC_808_DISTORTION, encoderPos1.position, DRUM_MIDI_CHAN);
     if (encoderPos2.hasNewPosition) SendControlChange(CC_303_DISTORTION, encoderPos2.position, SYNTH1_MIDI_CHAN);
-    if (encoderPos3.hasNewPosition) SendControlChange(CC_ANY_DELAY_FB, encoderPos3.position, GLOBAL_MIDI_CHAN);
+    if (encoderPos3.hasNewPosition) SendControlChange(CC_303_DISTORTION, encoderPos3.position, SYNTH2_MIDI_CHAN);
     if (encoderPos4.hasNewPosition) SendControlChange(CC_ANY_COMPRESSOR, encoderPos4.position, GLOBAL_MIDI_CHAN);
     break;
   case AudioControlMode::Mode2:

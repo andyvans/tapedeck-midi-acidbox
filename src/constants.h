@@ -32,12 +32,11 @@
 #define ROTARY_ENCODER_4_SW_PIN   12 
 
 // Button pins
-#define RECORD_BUTTON_PIN         21 // Change theme color
-#define REWIND_BUTTON_PIN         47 // Button 1
-#define FAST_FORWARD_BUTTON_PIN   48 // Button 2
-#define PLAY_BUTTON_PIN           35 // Button 3
-#define STOP_BUTTON_PIN           36 // Button 4
-//#define PAUSE_PIN               RST // Reset AcidBox
+//#define RECORD_BUTTON_PIN         21 // Change theme color
+//#define REWIND_BUTTON_PIN         47 // Button 1
+//#define FAST_FORWARD_BUTTON_PIN   48 // Button 2
+//#define PLAY_BUTTON_PIN           35 // Button 3
+//#define STOP_BUTTON_PIN           36 // Button 4
 
 #define LEFT_SWITCH_PIN            36 // Left switch
 #define RIGHT_SWITCH_PIN           37 // Right switch
