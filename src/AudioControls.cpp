@@ -87,16 +87,16 @@ void AudioControls::ProcessAudioControl()
     if (encoderPos4.hasNewPosition) SendControlChange(CC_ANY_COMPRESSOR, encoderPos4.position, GLOBAL_MIDI_CHAN);
     break;
   case AudioControlMode::Mode2:
-    if (encoderPos1.hasNewPosition) SendControlChange(CC_808_VOLUME, encoderPos1.position, DRUM_MIDI_CHAN);
-    if (encoderPos2.hasNewPosition) SendControlChange(CC_303_VOLUME, encoderPos2.position, SYNTH1_MIDI_CHAN);
-    if (encoderPos3.hasNewPosition) SendControlChange(CC_303_VOLUME, encoderPos3.position, SYNTH2_MIDI_CHAN);
+    if (encoderPos1.hasNewPosition) SendControlChange(CC_303_WAVEFORM, encoderPos1.position, SYNTH1_MIDI_CHAN);
+    if (encoderPos2.hasNewPosition) SendControlChange(CC_303_PAN, encoderPos2.position, SYNTH1_MIDI_CHAN);
+    if (encoderPos3.hasNewPosition) SendControlChange(CC_303_PORTATIME, encoderPos3.position, SYNTH2_MIDI_CHAN);
     if (encoderPos4.hasNewPosition) SendControlChange(CC_ANY_REVERB_TIME, encoderPos4.position, SYNTH1_MIDI_CHAN);
     break;
   case AudioControlMode::Mode3:
-    if (encoderPos1.hasNewPosition) SendControlChange(CC_808_VOLUME, encoderPos1.position, DRUM_MIDI_CHAN);
-    if (encoderPos2.hasNewPosition) SendControlChange(CC_303_VOLUME, encoderPos2.position, SYNTH1_MIDI_CHAN);
-    if (encoderPos3.hasNewPosition) SendControlChange(CC_303_VOLUME, encoderPos3.position, SYNTH2_MIDI_CHAN);
-    if (encoderPos4.hasNewPosition) SendControlChange(CC_ANY_REVERB_TIME, encoderPos4.position, SYNTH1_MIDI_CHAN);
+    if (encoderPos1.hasNewPosition) SendControlChange(CC_ANY_DELAY_FB, encoderPos1.position, GLOBAL_MIDI_CHAN);
+    if (encoderPos2.hasNewPosition) SendControlChange(CC_ANY_DELAY_LVL, encoderPos2.position, GLOBAL_MIDI_CHAN);
+    if (encoderPos3.hasNewPosition) SendControlChange(CC_808_DISTORTION, encoderPos3.position, GLOBAL_MIDI_CHAN);
+    if (encoderPos4.hasNewPosition) SendControlChange(CC_303_SATURATOR, encoderPos4.position, SYNTH1_MIDI_CHAN);
     break;
   }
 }
@@ -113,7 +113,7 @@ void AudioControls::UpdateMidiState()
   }
   else if (leftSwitchState)
   {
-    newMidiState = AudioControlMode::Mode1;
+    newMidiState = AudioControlMode::Mode2;
   }
   else if (rightSwitchState)
   {
@@ -121,7 +121,7 @@ void AudioControls::UpdateMidiState()
   }
   else
   {
-    newMidiState = AudioControlMode::Mode2;
+    newMidiState = AudioControlMode::Mode1;
   }
 
 #ifndef ENABLE_MIDI
