@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <OneButton.h>
 #include "OneRotaryEncoder.h"
+#include "Display.h"
 
 #define ENABLE_MIDI
 #define MIDI_CONTROLLER_MAX_DEVICES 20
@@ -25,6 +26,7 @@ public:
 private:  
   OneButton* buttons[MIDI_CONTROLLER_MAX_DEVICES] = {};
   OneRotaryEncoder* encoders[MIDI_CONTROLLER_MAX_DEVICES] = {};
+  Display display;
 
   void UpdateMidiState();
   void ProcessAudioControl();

@@ -19,6 +19,8 @@ void setup()
 {
   Serial.begin(115200);
   
+  Wire.begin(DISPLAY_SDA_PIN, DISPLAY_SCL_PIN);
+  
   deckLight.Setup();
   midiController.Setup();
 
