@@ -9,7 +9,7 @@ class Display
 public:
     Display();
     void Setup();
-    void WriteText(const char* text);
+    void WriteText(const char* text, int length);
     void Clear();
 
 private:
@@ -17,4 +17,9 @@ private:
     bool initialised;
     const int Width = 128;
     const int Height = 64;
+    
+    char line1[20];
+    char line2[20];
+    char line3[20];
+    char line4[20];
 };

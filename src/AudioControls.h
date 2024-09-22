@@ -36,4 +36,6 @@ private:
   AudioControlMode midiState = AudioControlMode::Mode0;
   bool leftSwitchState = false;
   bool rightSwitchState = false;
+
+  char textBuffer[64];
 };
