@@ -1,6 +1,6 @@
 #include "Display.h"
 
-Display::Display() : display(4) 
+Display::Display() : display(-1)
 {
 }
 
