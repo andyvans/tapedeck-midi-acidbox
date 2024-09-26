@@ -1,6 +1,6 @@
 #include "Display.h"
 
-Display::Display() : display(Width, Height, &Wire) 
+Display::Display() : display(4) 
 {
 }
 
@@ -13,16 +13,43 @@ void Display::Setup()
   display.setTextColor(SSD1306_WHITE);
 }
 
-void Display::WriteText(const char *text, int length)
+void Display::WriteText(const char *text)
 {
-  if (!initialised) return;
-
   // copy all line to one above
   strncpy(line1, line2, sizeof(line1));
   strncpy(line2, line3, sizeof(line2));
   strncpy(line3, line4, sizeof(line3));
   strncpy(line4, text, sizeof(line4));
+  lastMessageUpdate = millis();
+  renderText = true;
+}
+
+void Display::Tick()
+{
+  if (!initialised) return;
   
+  bool showText = true;//lastMessageUpdate + 5000 > millis();
+  if (showText && renderText) 
+  {
+    RenderMessages();
+    renderText = false;
+  }
+  else 
+  {
+    RenderScreenSaver();
+  }
+}
+
+void Display::Clear()
+{
+  if (!initialised) return;
+  
+  display.clearDisplay();
+  display.display();
+}
+
+void Display::RenderMessages()
+{
   display.clearDisplay();  
   display.setCursor(0, 0); // Start at top-left corner
   display.println(line1);
@@ -32,10 +59,14 @@ void Display::WriteText(const char *text, int length)
   display.display();
 }
 
-void Display::Clear()
+void Display::RenderScreenSaver()
 {
-  if (!initialised) return;
-  
   display.clearDisplay();
-  display.display();
+
+  for (int16_t i=0; i<display.height()/2-2; i+=2) 
+  {
+    display.drawRoundRect(i, i, display.width()-2*i, display.height()-2*i, display.height()/4, WHITE);
+    display.display();
+    delay(1);
+  }
 }

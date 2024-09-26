@@ -45,7 +45,7 @@ AudioControls::AudioControls()
 void AudioControls::Setup()
 {
   display.Setup();
-  display.WriteText("AcidBox", sizeof(textBuffer));
+  display.WriteText("AcidBox");
 
 #ifdef ENABLE_MIDI
   MIDI.begin(MIDI_CHANNEL_OMNI);
@@ -65,6 +65,7 @@ void AudioControls::Tick()
   }
 
   ProcessAudioControl();
+  display.Tick();
 }
 
 void AudioControls::ProcessAudioControl()
@@ -141,7 +142,7 @@ void AudioControls::UpdateMidiState()
 void AudioControls::SendProgramChange(int program, int channel)
 {  
   sprintf(textBuffer, "Program: %d %d", program, channel);
-  display.WriteText(textBuffer, sizeof(textBuffer));
+  display.WriteText(textBuffer);
   
 #ifdef ENABLE_MIDI
   MIDI.sendProgramChange(program, channel);

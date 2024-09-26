@@ -9,10 +9,14 @@ class Display
 public:
     Display();
     void Setup();
-    void WriteText(const char* text, int length);
+    void Tick();
+    void WriteText(const char* text);
     void Clear();
 
 private:
+    void RenderMessages();
+    void RenderScreenSaver();
+
     Adafruit_SSD1306 display;
     bool initialised;
     const int Width = 128;
@@ -22,4 +26,6 @@ private:
     char line2[20];
     char line3[20];
     char line4[20];
+    ulong lastMessageUpdate;
+    bool renderText;
 };
