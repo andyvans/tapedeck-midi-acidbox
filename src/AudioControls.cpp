@@ -45,7 +45,6 @@ AudioControls::AudioControls()
 void AudioControls::Setup()
 {
   display.Setup();
-  display.WriteText("AcidBox");
 
 #ifdef ENABLE_MIDI
   MIDI.begin(MIDI_CHANNEL_OMNI);
@@ -65,6 +64,7 @@ void AudioControls::Tick()
   }
 
   ProcessAudioControl();
+  controlsInitialised = true;
   display.Tick();
 }
 
@@ -140,7 +140,8 @@ void AudioControls::UpdateMidiState()
 }
 
 void AudioControls::SendProgramChange(int program, int channel)
-{  
+{
+  if (!controlsInitialised) return;  
   sprintf(textBuffer, "Program: %d %d", program, channel);
   display.WriteText(textBuffer);
   
@@ -155,10 +156,12 @@ void AudioControls::SendProgramChange(int program, int channel)
 #endif
 }
 
-void AudioControls::SendControlChange(uint8_t program, uint8_t value, uint8_t channel)
+void AudioControls::SendControlChange(uint8_t program, uint8_t midiValue, uint8_t channel)
 {
-  // Midi values are 0-127. Rotary encoder values are 0-255.
-  int midiValue = value;//map(value, 0, 255, 0, 127);
+  if (!controlsInitialised) return;
+  
+  sprintf(textBuffer, ">> %d %d %d", program, channel, midiValue);
+  display.WriteText(textBuffer);
 
 #ifdef ENABLE_MIDI
   MIDI.sendControlChange(program, midiValue, channel);

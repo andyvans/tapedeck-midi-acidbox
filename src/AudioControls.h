@@ -38,4 +38,5 @@ private:
   bool rightSwitchState = false;
 
   char textBuffer[64];
+  bool controlsInitialised = false;
 };

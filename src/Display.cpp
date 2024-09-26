@@ -9,8 +9,17 @@ void Display::Setup()
   initialised = display.begin(SSD1306_SWITCHCAPVCC, 0x0, true, false);
   if (!initialised) return;
 
-  display.setTextSize(1); // Normal 1:1 pixel scale
+  display.clearDisplay();  
+  
+  display.setCursor(0, 0);
   display.setTextColor(SSD1306_WHITE);
+  display.setTextSize(2);
+  display.println("ACID BOX");
+  display.println("A&K 2024");    
+  display.display();
+
+  display.setTextSize(1);
+  lastMessageUpdate = millis();
 }
 
 void Display::WriteText(const char *text)
@@ -28,11 +37,14 @@ void Display::Tick()
 {
   if (!initialised) return;
   
-  bool showText = true;//lastMessageUpdate + 5000 > millis();
-  if (showText && renderText) 
+  bool showText = lastMessageUpdate + 5000 > millis();
+  if (showText) 
   {
-    RenderMessages();
-    renderText = false;
+    if (renderText)
+    {
+      RenderMessages();
+      renderText = false;
+    }
   }
   else 
   {
