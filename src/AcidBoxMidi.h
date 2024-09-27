@@ -1,10 +1,10 @@
 #pragma once
 
 // Channels
-#define GLOBAL_MIDI_CHAN 1
 #define SYNTH1_MIDI_CHAN 1
 #define SYNTH2_MIDI_CHAN 2
 #define DRUM_MIDI_CHAN 10
+#define GLOBAL_MIDI_CHAN 3  // Not a real channel, used for global controls
 
 #define GM_MIDI
 //#define VINTAGE_MIDI
