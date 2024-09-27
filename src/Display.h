@@ -23,10 +23,10 @@ private:
     const int Width = 128;
     const int Height = 64;
     
-    char line1[20];
-    char line2[20];
-    char line3[20];
-    char line4[20];
+    char line1[40];
+    char line2[40];
+    char line3[40];
+    char line4[40];
     ulong lastMessageUpdate;
     bool renderText;
 

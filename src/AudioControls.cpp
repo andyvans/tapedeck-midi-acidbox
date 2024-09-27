@@ -82,25 +82,25 @@ void AudioControls::ProcessAudioControl()
     if (encoderPos1.hasNewPosition) SendControlChange(CC_808_VOLUME, encoderPos1.position, DRUM_MIDI_CHAN);
     if (encoderPos2.hasNewPosition) SendControlChange(CC_303_VOLUME, encoderPos2.position, SYNTH1_MIDI_CHAN);
     if (encoderPos3.hasNewPosition) SendControlChange(CC_303_VOLUME, encoderPos3.position, SYNTH2_MIDI_CHAN);
-    if (encoderPos4.hasNewPosition) SendControlChange(CC_ANY_DELAY_TIME, encoderPos4.position, SYNTH1_MIDI_CHAN);
+    if (encoderPos4.hasNewPosition) SendControlChange(CC_ANY_DELAY_FB, encoderPos4.position, GLOBAL_MIDI_CHAN);
     break;
   case AudioControlMode::Mode1:
     if (encoderPos1.hasNewPosition) SendControlChange(CC_808_DISTORTION, encoderPos1.position, DRUM_MIDI_CHAN);
-    if (encoderPos2.hasNewPosition) SendControlChange(CC_303_DISTORTION, encoderPos2.position, SYNTH1_MIDI_CHAN);
-    if (encoderPos3.hasNewPosition) SendControlChange(CC_303_DISTORTION, encoderPos3.position, SYNTH2_MIDI_CHAN);
-    if (encoderPos4.hasNewPosition) SendControlChange(CC_ANY_COMPRESSOR, encoderPos4.position, GLOBAL_MIDI_CHAN);
+    if (encoderPos2.hasNewPosition) SendControlChange(CC_808_BD_TONE, encoderPos2.position, DRUM_MIDI_CHAN);
+    if (encoderPos3.hasNewPosition) SendControlChange(CC_808_PITCH, encoderPos3.position, DRUM_MIDI_CHAN);
+    if (encoderPos4.hasNewPosition) SendControlChange(CC_808_CH_TUNE, encoderPos4.position, DRUM_MIDI_CHAN);
     break;
   case AudioControlMode::Mode2:
-    if (encoderPos1.hasNewPosition) SendControlChange(CC_303_WAVEFORM, encoderPos1.position, SYNTH1_MIDI_CHAN);
-    if (encoderPos2.hasNewPosition) SendControlChange(CC_303_PAN, encoderPos2.position, SYNTH1_MIDI_CHAN);
-    if (encoderPos3.hasNewPosition) SendControlChange(CC_303_PORTATIME, encoderPos3.position, SYNTH2_MIDI_CHAN);
-    if (encoderPos4.hasNewPosition) SendControlChange(CC_ANY_REVERB_TIME, encoderPos4.position, SYNTH1_MIDI_CHAN);
+    if (encoderPos1.hasNewPosition) SendControlChange(CC_ANY_DELAY_TIME, encoderPos1.position, GLOBAL_MIDI_CHAN);
+    if (encoderPos2.hasNewPosition) SendControlChange(CC_ANY_DELAY_FB, encoderPos2.position, GLOBAL_MIDI_CHAN);
+    if (encoderPos3.hasNewPosition) SendControlChange(CC_ANY_DELAY_LVL, encoderPos3.position, GLOBAL_MIDI_CHAN);
+    if (encoderPos4.hasNewPosition) SendControlChange(CC_ANY_REVERB_TIME, encoderPos4.position, GLOBAL_MIDI_CHAN);
     break;
   case AudioControlMode::Mode3:
-    if (encoderPos1.hasNewPosition) SendControlChange(CC_ANY_DELAY_FB, encoderPos1.position, GLOBAL_MIDI_CHAN);
-    if (encoderPos2.hasNewPosition) SendControlChange(CC_ANY_DELAY_LVL, encoderPos2.position, GLOBAL_MIDI_CHAN);
-    if (encoderPos3.hasNewPosition) SendControlChange(CC_808_DISTORTION, encoderPos3.position, GLOBAL_MIDI_CHAN);
-    if (encoderPos4.hasNewPosition) SendControlChange(CC_303_SATURATOR, encoderPos4.position, SYNTH1_MIDI_CHAN);
+    if (encoderPos1.hasNewPosition) SendControlChange(CC_ANY_REVERB_TIME, encoderPos1.position, GLOBAL_MIDI_CHAN);
+    if (encoderPos2.hasNewPosition) SendControlChange(CC_ANY_REVERB_LVL, encoderPos2.position, GLOBAL_MIDI_CHAN);
+    if (encoderPos3.hasNewPosition) SendControlChange(CC_808_NOTE_ATTACK, encoderPos3.position, DRUM_MIDI_CHAN);
+    if (encoderPos4.hasNewPosition) SendControlChange(CC_808_OH_LEVEL, encoderPos4.position, DRUM_MIDI_CHAN);
     break;
   }
 }
@@ -161,8 +161,14 @@ void AudioControls::SendControlChange(uint8_t program, uint8_t midiValue, uint8_
 {
   if (!controlsInitialised) return;
 
+  if (midiValue > 127) midiValue = 127;
+  if (midiValue < 0) midiValue = 0;
+
   sprintf(textBuffer, "%s %s %d", GetMidiChannelName(channel), GetMidiControlName(program), midiValue);
   display.WriteText(textBuffer);
+
+  // Global is uses channel 1
+  if (channel == GLOBAL_MIDI_CHAN) channel = 1;
 
 #ifdef ENABLE_MIDI
   MIDI.sendControlChange(program, midiValue, channel);
@@ -197,11 +203,11 @@ const char *AudioControls::GetMidiControlName(uint8_t number)
   switch (number)
   {
   case CC_303_PORTATIME:
-    return "PortTime";
+    return "Portatime";
   case CC_303_VOLUME:
     return "Volume";
   case CC_303_PORTAMENTO:
-    return "Portam";
+    return "Portamento";
   case CC_303_PAN:
     return "Pan";
   case CC_303_WAVEFORM:
@@ -215,9 +221,9 @@ const char *AudioControls::GetMidiControlName(uint8_t number)
   case CC_303_DECAY:
     return "Decay";
   case CC_303_ENVMOD_LVL:
-    return "EnvMod";
+    return "Env modlvl";
   case CC_303_ACCENT_LVL:
-    return "Accent";
+    return "Accent lvl";
   case CC_303_REVERB_SEND:
     return "Reverb";
   case CC_303_DELAY_SEND:
@@ -228,52 +234,52 @@ const char *AudioControls::GetMidiControlName(uint8_t number)
     return "Saturation";
 
   case CC_808_NOTE_PAN:
-    return "NotePan";
+    return "Note pan";
   case CC_808_PITCH:
     return "Pitch";
   case CC_808_NOTE_SEL:
-    return "NoteSel";
+    return "Note sel";
   case CC_808_BD_TONE:
-    return "BDTone";
+    return "BD tone";
   case CC_808_BD_DECAY:
-    return "BDDecay";
+    return "BD decay";
   case CC_808_BD_LEVEL:
-    return "BDLevel";
+    return "BD level";
   case CC_808_SD_TONE:
-    return "SDTone";
+    return "SD tone";
   case CC_808_SD_SNAP:
-    return "SDSnap";
+    return "SD snap";
   case CC_808_SD_LEVEL:
-    return "SDLevel";
+    return "SD level";
   case CC_808_CH_TUNE:
-    return "ChTune";
+    return "Ch tune";
   case CC_808_CH_LEVEL:
-    return "ChLevel";
+    return "Ch level";
   case CC_808_OH_TUNE:
-    return "OHTune";
+    return "OH tune";
   case CC_808_OH_DECAY:
-    return "OHDecay";
+    return "OH decay";
   case CC_808_OH_LEVEL:
-    return "OHLevel";
+    return "OH level";
 
   case CC_ANY_COMPRESSOR:
     return "Compressor";
   case CC_ANY_DELAY_TIME:
     return "Delay";
   case CC_ANY_DELAY_FB:
-    return "DelayF";
+    return "Delay FB";
   case CC_ANY_DELAY_LVL:
-    return "DelayL";
+    return "Delay lvl";
   case CC_ANY_REVERB_TIME:
-    return "ReverbT";
+    return "Reverb Tm";
   case CC_ANY_REVERB_LVL:
-    return "ReverbL";
+    return "Reverb lvl";
   case CC_ANY_RESET_CCS:
-    return "ResetC";
+    return "Reset CCS";
   case CC_ANY_NOTES_OFF:
-    return "NoteOff";
+    return "Notes Off";
   case CC_ANY_SOUND_OFF:
-    return "SoundOff";
+    return "Sound Off";
   default:
     return "Unknown";
   }
