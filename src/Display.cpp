@@ -9,16 +9,8 @@ void Display::Setup()
   initialised = display.begin(SSD1306_SWITCHCAPVCC, 0x0, true, false);
   if (!initialised) return;
 
-  display.clearDisplay();  
-  
-  display.setCursor(0, 0);
   display.setTextColor(SSD1306_WHITE);
-  display.setTextSize(2);
-  display.println("ACID BOX");
-  display.println("A&K 2024");    
-  display.display();
-
-  display.setTextSize(1);
+  RenderSplash();
   lastMessageUpdate = millis();
 }
 
@@ -37,7 +29,7 @@ void Display::Tick()
 {
   if (!initialised) return;
   
-  bool showText = lastMessageUpdate + 5000 > millis();
+  bool showText = lastMessageUpdate + TextTimeout > millis();
   if (showText) 
   {
     if (renderText)
@@ -60,10 +52,23 @@ void Display::Clear()
   display.display();
 }
 
+void Display::RenderSplash()
+{
+  display.clearDisplay();  
+  display.setCursor(0, 0);
+  
+  display.setTextSize(2);
+  display.println(">> ACIDBOX");
+  display.setTextSize(1);
+  display.println("     Andy & Karl");
+  display.println("         2024");
+  display.display();
+}
 void Display::RenderMessages()
 {
   display.clearDisplay();  
-  display.setCursor(0, 0); // Start at top-left corner
+  display.setCursor(0, 0);
+  display.setTextSize(1);  
   display.println(line1);
   display.println(line2);
   display.println(line3);
@@ -73,12 +78,15 @@ void Display::RenderMessages()
 
 void Display::RenderScreenSaver()
 {
-  display.clearDisplay();
-
-  for (int16_t i=0; i<display.height()/2-2; i+=2) 
-  {
-    display.drawRoundRect(i, i, display.width()-2*i, display.height()-2*i, display.height()/4, WHITE);
-    display.display();
-    delay(1);
-  }
+  int now = millis();
+  if (now - lastRenderTime < 50) return;
+  
+  if (currentIteration < display.height() / 2 - 2) {
+        display.drawRoundRect(currentIteration, currentIteration, display.width() - 2 * currentIteration, display.height() - 2 * currentIteration, display.height() / 4, WHITE);
+        display.display();
+        currentIteration += 2;
+    } else {
+        currentIteration = 0; // Reset for the next cycle
+        display.clearDisplay();
+    }
 }

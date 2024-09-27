@@ -33,6 +33,9 @@ private:
   void SendProgramChange(int program, int channel);
   void SendControlChange(uint8_t number, uint8_t value, uint8_t channel);
 
+  const char* GetMidiControlName(uint8_t number);
+  const char* GetMidiChannelName(uint8_t channel);
+
   AudioControlMode midiState = AudioControlMode::Mode0;
   bool leftSwitchState = false;
   bool rightSwitchState = false;

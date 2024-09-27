@@ -14,6 +14,7 @@ public:
     void Clear();
 
 private:
+    void RenderSplash();
     void RenderMessages();
     void RenderScreenSaver();
 
@@ -28,4 +29,10 @@ private:
     char line4[20];
     ulong lastMessageUpdate;
     bool renderText;
+
+    const int TextTimeout = 10000;
+
+    // Animation
+    int currentIteration = 0;
+    int lastRenderTime = 0;
 };

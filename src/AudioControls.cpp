@@ -16,7 +16,7 @@ AudioControls::AudioControls()
   int encoderCount = -1;
 
   // REWIND button
-  // auto button1 = new OneButton(REWIND_BUTTON_PIN, true);  
+  // auto button1 = new OneButton(REWIND_BUTTON_PIN, true);
   // button1->attachLongPressStart([](void *scope) {
   //   ((AudioControls*)scope)->SendControlChange(CC_ANY_DELAY_FB, 127, DRUM_MIDI_CHAN);
   // }, this);
@@ -36,7 +36,7 @@ AudioControls::AudioControls()
   // Encoder 3
   auto encoder3 = new OneRotaryEncoder(ROTARY_ENCODER_3_A_PIN, ROTARY_ENCODER_3_B_PIN, ROTARY_ENCODER_3_SW_PIN, 64, 0, 127);
   encoders[++encoderCount] = encoder3;
-  
+
   // Encoder 4
   auto encoder4 = new OneRotaryEncoder(ROTARY_ENCODER_4_A_PIN, ROTARY_ENCODER_4_B_PIN, ROTARY_ENCODER_4_SW_PIN, 64, 0, 127);
   encoders[++encoderCount] = encoder4;
@@ -70,8 +70,8 @@ void AudioControls::Tick()
 
 void AudioControls::ProcessAudioControl()
 {
-  UpdateMidiState();  
-  auto encoderPos1 = encoders[0]->GetPosition();  
+  UpdateMidiState();
+  auto encoderPos1 = encoders[0]->GetPosition();
   auto encoderPos2 = encoders[1]->GetPosition();
   auto encoderPos3 = encoders[2]->GetPosition();
   auto encoderPos4 = encoders[3]->GetPosition();
@@ -141,10 +141,11 @@ void AudioControls::UpdateMidiState()
 
 void AudioControls::SendProgramChange(int program, int channel)
 {
-  if (!controlsInitialised) return;  
-  sprintf(textBuffer, "Program: %d %d", program, channel);
+  if (!controlsInitialised) return;
+
+  sprintf(textBuffer, "%s %s", GetMidiChannelName(channel), GetMidiControlName(program));
   display.WriteText(textBuffer);
-  
+
 #ifdef ENABLE_MIDI
   MIDI.sendProgramChange(program, channel);
 #else
@@ -159,8 +160,8 @@ void AudioControls::SendProgramChange(int program, int channel)
 void AudioControls::SendControlChange(uint8_t program, uint8_t midiValue, uint8_t channel)
 {
   if (!controlsInitialised) return;
-  
-  sprintf(textBuffer, ">> %d %d %d", program, channel, midiValue);
+
+  sprintf(textBuffer, "%s %s %d", GetMidiChannelName(channel), GetMidiControlName(program), midiValue);
   display.WriteText(textBuffer);
 
 #ifdef ENABLE_MIDI
@@ -176,3 +177,104 @@ void AudioControls::SendControlChange(uint8_t program, uint8_t midiValue, uint8_
 #endif
 }
 
+const char *AudioControls::GetMidiChannelName(uint8_t channel)
+{
+  switch (channel)
+  {
+  case SYNTH1_MIDI_CHAN:
+    return "Synth1";
+  case SYNTH2_MIDI_CHAN:
+    return "Synth2";
+  case DRUM_MIDI_CHAN:
+    return "Drums";
+  default:
+    return "Global";
+  }
+}
+
+const char *AudioControls::GetMidiControlName(uint8_t number)
+{
+  switch (number)
+  {
+  case CC_303_PORTATIME:
+    return "PortTime";
+  case CC_303_VOLUME:
+    return "Volume";
+  case CC_303_PORTAMENTO:
+    return "Portam";
+  case CC_303_PAN:
+    return "Pan";
+  case CC_303_WAVEFORM:
+    return "Waveform";
+  case CC_303_RESO:
+    return "Resonance";
+  case CC_303_CUTOFF:
+    return "Cutoff";
+  case CC_303_ATTACK:
+    return "Attack";
+  case CC_303_DECAY:
+    return "Decay";
+  case CC_303_ENVMOD_LVL:
+    return "EnvMod";
+  case CC_303_ACCENT_LVL:
+    return "Accent";
+  case CC_303_REVERB_SEND:
+    return "Reverb";
+  case CC_303_DELAY_SEND:
+    return "Delay";
+  case CC_303_DISTORTION:
+    return "Distortion";
+  case CC_303_SATURATOR:
+    return "Saturation";
+
+  case CC_808_NOTE_PAN:
+    return "NotePan";
+  case CC_808_PITCH:
+    return "Pitch";
+  case CC_808_NOTE_SEL:
+    return "NoteSel";
+  case CC_808_BD_TONE:
+    return "BDTone";
+  case CC_808_BD_DECAY:
+    return "BDDecay";
+  case CC_808_BD_LEVEL:
+    return "BDLevel";
+  case CC_808_SD_TONE:
+    return "SDTone";
+  case CC_808_SD_SNAP:
+    return "SDSnap";
+  case CC_808_SD_LEVEL:
+    return "SDLevel";
+  case CC_808_CH_TUNE:
+    return "ChTune";
+  case CC_808_CH_LEVEL:
+    return "ChLevel";
+  case CC_808_OH_TUNE:
+    return "OHTune";
+  case CC_808_OH_DECAY:
+    return "OHDecay";
+  case CC_808_OH_LEVEL:
+    return "OHLevel";
+
+  case CC_ANY_COMPRESSOR:
+    return "Compressor";
+  case CC_ANY_DELAY_TIME:
+    return "Delay";
+  case CC_ANY_DELAY_FB:
+    return "DelayF";
+  case CC_ANY_DELAY_LVL:
+    return "DelayL";
+  case CC_ANY_REVERB_TIME:
+    return "ReverbT";
+  case CC_ANY_REVERB_LVL:
+    return "ReverbL";
+  case CC_ANY_RESET_CCS:
+    return "ResetC";
+  case CC_ANY_NOTES_OFF:
+    return "NoteOff";
+  case CC_ANY_SOUND_OFF:
+    return "SoundOff";
+  default:
+    return "Unknown";
+  }
+}
