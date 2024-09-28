@@ -37,8 +37,8 @@ AudioControls::AudioControls()
   auto encoder3 = new OneRotaryEncoder(ROTARY_ENCODER_3_A_PIN, ROTARY_ENCODER_3_B_PIN, ROTARY_ENCODER_3_SW_PIN, 64, 0, 127);
   encoders[++encoderCount] = encoder3;
 
-  // Encoder 4
-  auto encoder4 = new OneRotaryEncoder(ROTARY_ENCODER_4_A_PIN, ROTARY_ENCODER_4_B_PIN, ROTARY_ENCODER_4_SW_PIN, 64, 0, 127);
+  // Encoder 4 - initial value 0
+  auto encoder4 = new OneRotaryEncoder(ROTARY_ENCODER_4_A_PIN, ROTARY_ENCODER_4_B_PIN, ROTARY_ENCODER_4_SW_PIN, 0, 0, 127);
   encoders[++encoderCount] = encoder4;
 }
 
@@ -85,10 +85,10 @@ void AudioControls::ProcessAudioControl()
     if (encoderPos4.hasNewPosition) SendControlChange(CC_ANY_DELAY_FB, encoderPos4.position, GLOBAL_MIDI_CHAN);
     break;
   case AudioControlMode::Mode1:
-    if (encoderPos1.hasNewPosition) SendControlChange(CC_808_DISTORTION, encoderPos1.position, DRUM_MIDI_CHAN);
+    if (encoderPos1.hasNewPosition) SendControlChange(CC_808_PITCH, encoderPos1.position, DRUM_MIDI_CHAN);
     if (encoderPos2.hasNewPosition) SendControlChange(CC_808_BD_TONE, encoderPos2.position, DRUM_MIDI_CHAN);
-    if (encoderPos3.hasNewPosition) SendControlChange(CC_808_PITCH, encoderPos3.position, DRUM_MIDI_CHAN);
-    if (encoderPos4.hasNewPosition) SendControlChange(CC_808_CH_TUNE, encoderPos4.position, DRUM_MIDI_CHAN);
+    if (encoderPos3.hasNewPosition) SendControlChange(CC_808_CH_TONE, encoderPos3.position, DRUM_MIDI_CHAN);
+    if (encoderPos4.hasNewPosition) SendControlChange(CC_808_OH_TONE, encoderPos4.position, DRUM_MIDI_CHAN);
     break;
   case AudioControlMode::Mode2:
     if (encoderPos1.hasNewPosition) SendControlChange(CC_ANY_DELAY_TIME, encoderPos1.position, GLOBAL_MIDI_CHAN);
@@ -221,7 +221,7 @@ const char *AudioControls::GetMidiControlName(uint8_t number)
   case CC_303_DECAY:
     return "Decay";
   case CC_303_ENVMOD_LVL:
-    return "Env modlvl";
+    return "Env mod lvl";
   case CC_303_ACCENT_LVL:
     return "Accent lvl";
   case CC_303_REVERB_SEND:
@@ -240,27 +240,27 @@ const char *AudioControls::GetMidiControlName(uint8_t number)
   case CC_808_NOTE_SEL:
     return "Note sel";
   case CC_808_BD_TONE:
-    return "BD tone";
+    return "Bass tone";
   case CC_808_BD_DECAY:
-    return "BD decay";
+    return "Bass decay";
   case CC_808_BD_LEVEL:
-    return "BD level";
+    return "Bass level";
   case CC_808_SD_TONE:
-    return "SD tone";
+    return "Snare tone";
   case CC_808_SD_SNAP:
-    return "SD snap";
+    return "Snare snap";
   case CC_808_SD_LEVEL:
-    return "SD level";
-  case CC_808_CH_TUNE:
-    return "Ch tune";
+    return "Snare level";
+  case CC_808_CH_TONE:
+    return "Cl hat tone";
   case CC_808_CH_LEVEL:
-    return "Ch level";
-  case CC_808_OH_TUNE:
-    return "OH tune";
+    return "Cl hat lvl";
+  case CC_808_OH_TONE:
+    return "Op hat tone";
   case CC_808_OH_DECAY:
-    return "OH decay";
+    return "Op hat dcy";
   case CC_808_OH_LEVEL:
-    return "OH level";
+    return "Op hat lvl";
 
   case CC_ANY_COMPRESSOR:
     return "Compressor";

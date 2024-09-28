@@ -47,9 +47,9 @@
 #define CC_808_SD_TONE      25  // Snare Drum tone control
 #define CC_808_SD_SNAP      26  // Snare Drum envelope decay
 #define CC_808_SD_LEVEL     29  // Snare Drum mix level
-#define CC_808_CH_TUNE      61  // Closed Hat tone control
+#define CC_808_CH_TONE      61  // Closed Hat tone control
 #define CC_808_CH_LEVEL     63  // Closed Hat mix level
-#define CC_808_OH_TUNE      80  // Open Hat tone control
+#define CC_808_OH_TONE      80  // Open Hat tone control
 #define CC_808_OH_DECAY     81  // Open Hat envelope decay
 #define CC_808_OH_LEVEL     82  // Open Hat mix level
 
