@@ -15,7 +15,7 @@ AudioControls::AudioControls()
   encoderGlobalProgram[0] = CC_808_VOLUME;
   encoderGlobalProgram[1] = CC_303_VOLUME;
   encoderGlobalProgram[2] = CC_303_VOLUME;
-  encoderGlobalProgram[3] = CC_ANY_COMPRESSOR;
+  encoderGlobalProgram[3] = CC_ANY_DELAY_LVL;
 
   encoderDrumProgram[0] = CC_808_PITCH;  
   encoderDrumProgram[1] = CC_808_BD_TONE;
@@ -41,7 +41,7 @@ AudioControls::AudioControls()
   int encoderCount = -1;
 
   // Encoder switch 1 is used for light theme
-  
+
   // Encoder switch 2  - changes programs
   auto button2 = new OneButton(ROTARY_ENCODER_2_SW_PIN, true);
   button2->attachClick([](void *scope) 
@@ -196,11 +196,11 @@ void AudioControls::UpdateMidiState()
   auto newMidiState = midiState;
   if (leftSwitchState && rightSwitchState)
   {
-    newMidiState = AudioControlMode::ModeSynth2;
+    newMidiState = AudioControlMode::ModeSynth1;
   }
   else if (leftSwitchState)
   {
-    newMidiState = AudioControlMode::ModeSynth1;
+    newMidiState = AudioControlMode::ModeDrum;
   }
   else if (rightSwitchState)
   {
@@ -208,11 +208,11 @@ void AudioControls::UpdateMidiState()
   }
   else
   {
-    newMidiState = AudioControlMode::ModeDrum;
+    newMidiState = AudioControlMode::ModeSynth2;
   }
 
-  if (newMidiState != midiState)
-  {    
+  if (controlsInitialised && newMidiState != midiState)
+  { 
     display.WriteText(GetMidiChannelName(newMidiState));
 #ifndef ENABLE_MIDI
     Serial.print("Midi state: ");
@@ -305,7 +305,7 @@ const char *AudioControls::GetMidiControlName(uint8_t number)
   case CC_303_DECAY:
     return "Decay";
   case CC_303_ENVMOD_LVL:
-    return "Env mod lvl";
+    return "Env md lvl";
   case CC_303_ACCENT_LVL:
     return "Accent lvl";
   case CC_303_REVERB_SEND:
@@ -355,7 +355,7 @@ const char *AudioControls::GetMidiControlName(uint8_t number)
   case CC_ANY_DELAY_LVL:
     return "Delay lvl";
   case CC_ANY_REVERB_TIME:
-    return "Reverb Time";
+    return "Revrb Time";
   case CC_ANY_REVERB_LVL:
     return "Reverb lvl";
   case CC_ANY_RESET_CCS:
