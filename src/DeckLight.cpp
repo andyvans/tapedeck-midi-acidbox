@@ -10,7 +10,7 @@ CRGBPalette16 DeckLight::heatPalette = RedYellowGlobalPalette;
 
 int DeckLight::themeIndex = 0;
 bool DeckLight::autoChangePatterns = false;
-const int DeckLight::BrightnessSettings[] = {5, 30, 70};
+const int DeckLight::BrightnessSettings[] = {60, 30, 10};
 
 DeckLight::DeckLight() : 
   modeBtn(ROTARY_ENCODER_1_SW_PIN)
@@ -32,7 +32,7 @@ void DeckLight::Setup()
   }, this);
 
   // Careful with the amount of power here if running off USB port
-  const int MaxMilliAmps = 700; 
+  const int MaxMilliAmps = 400; 
 
   // Setup LED matrix
   // WS2812B is the chip type, GRB is the colour order
