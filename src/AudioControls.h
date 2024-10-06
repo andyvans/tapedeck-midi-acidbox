@@ -33,8 +33,8 @@ private:
   void ProcessAudioControl();
   void SendProgramChange(int program, int channel);
   void SendControlChange(uint8_t number, uint8_t value, uint8_t channel);
-  void UpdateDynamicEncoder(int encoder);
-  int SelectNextProgram(int currentProgram, const int *programs, int programCount);
+  void UpdateDynamicEncoder(int encoder, int increment);
+  int SelectNextProgram(int currentProgram, int increment, const int *programs, int programCount);
 
   const char* GetMidiControlName(uint8_t number);
   const char* GetMidiChannelName(uint8_t channel);

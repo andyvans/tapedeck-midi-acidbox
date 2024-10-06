@@ -6,8 +6,8 @@
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial, MIDI);
 
 const int AudioControls::globalPrograms[] = {CC_ANY_COMPRESSOR, CC_ANY_DELAY_TIME, CC_ANY_DELAY_FB, CC_ANY_DELAY_LVL, CC_ANY_REVERB_TIME, CC_ANY_REVERB_LVL};
-const int AudioControls::drum808Programs[] = {CC_808_BD_TONE, CC_808_BD_DECAY, CC_808_BD_LEVEL, CC_808_SD_TONE, CC_808_SD_SNAP, CC_808_SD_LEVEL, CC_808_CH_TONE, CC_808_CH_LEVEL, CC_808_OH_TONE, CC_808_OH_DECAY, CC_808_OH_LEVEL};
-const int AudioControls::synth303Programs[] = {CC_303_PORTATIME, CC_303_VOLUME, CC_303_PORTAMENTO, CC_303_PAN, CC_303_WAVEFORM, CC_303_RESO, CC_303_CUTOFF, CC_303_ATTACK, CC_303_DECAY, CC_303_ENVMOD_LVL, CC_303_ACCENT_LVL, CC_303_REVERB_SEND, CC_303_DELAY_SEND, CC_303_DISTORTION, CC_303_SATURATOR};
+const int AudioControls::drum808Programs[] = {CC_808_NOTE_PAN, CC_808_PAN, CC_808_RESO, CC_808_CUTOFF, CC_808_REVERB_SEND, CC_808_DELAY_SEND, CC_808_DISTORTION, CC_808_PITCH, CC_808_NOTE_SEL, CC_808_NOTE_ATTACK, CC_808_NOTE_DECAY, CC_808_BD_TONE, CC_808_BD_DECAY, CC_808_BD_LEVEL, CC_808_SD_TONE, CC_808_SD_SNAP, CC_808_SD_LEVEL, CC_808_CH_TONE, CC_808_CH_LEVEL, CC_808_OH_TONE, CC_808_OH_DECAY, CC_808_OH_LEVEL};
+const int AudioControls::synth303Programs[] = {CC_303_PORTATIME, CC_303_PORTAMENTO, CC_303_PAN, CC_303_WAVEFORM, CC_303_RESO, CC_303_CUTOFF, CC_303_ATTACK, CC_303_DECAY, CC_303_ENVMOD_LVL, CC_303_ACCENT_LVL, CC_303_REVERB_SEND, CC_303_DELAY_SEND, CC_303_DISTORTION, CC_303_OVERDRIVE, CC_303_SATURATOR};
 
 AudioControls::AudioControls()
 {
@@ -15,7 +15,7 @@ AudioControls::AudioControls()
   encoderGlobalProgram[0] = CC_808_VOLUME;
   encoderGlobalProgram[1] = CC_303_VOLUME;
   encoderGlobalProgram[2] = CC_303_VOLUME;
-  encoderGlobalProgram[3] = CC_ANY_DELAY_LVL;
+  encoderGlobalProgram[3] = CC_ANY_DELAY_FB;
 
   encoderDrumProgram[0] = CC_808_PITCH;  
   encoderDrumProgram[1] = CC_808_BD_TONE;
@@ -46,7 +46,11 @@ AudioControls::AudioControls()
   auto button2 = new OneButton(ROTARY_ENCODER_2_SW_PIN, true);
   button2->attachClick([](void *scope) 
   {
-    ((AudioControls*)scope)->UpdateDynamicEncoder(2);
+    ((AudioControls*)scope)->UpdateDynamicEncoder(2, 1);
+  }, this);
+  button2->attachLongPressStart([](void *scope) 
+  {
+    ((AudioControls*)scope)->UpdateDynamicEncoder(2, -1);
   }, this);  
   buttons[++buttonCount] = button2;
 
@@ -54,7 +58,11 @@ AudioControls::AudioControls()
   auto button3 = new OneButton(ROTARY_ENCODER_3_SW_PIN, true);
   button3->attachClick([](void *scope) 
   {
-    ((AudioControls*)scope)->UpdateDynamicEncoder(3);
+    ((AudioControls*)scope)->UpdateDynamicEncoder(3, 1);
+  }, this); 
+  button3->attachLongPressStart([](void *scope) 
+  {
+    ((AudioControls*)scope)->UpdateDynamicEncoder(3, -1);
   }, this);  
   buttons[++buttonCount] = button3;
 
@@ -62,7 +70,11 @@ AudioControls::AudioControls()
   auto button4 = new OneButton(ROTARY_ENCODER_4_SW_PIN, true);
   button4->attachClick([](void *scope) 
   {
-    ((AudioControls*)scope)->UpdateDynamicEncoder(4);
+    ((AudioControls*)scope)->UpdateDynamicEncoder(4, 1);
+  }, this); 
+  button4->attachLongPressStart([](void *scope) 
+  {
+    ((AudioControls*)scope)->UpdateDynamicEncoder(4, -1);
   }, this);  
   buttons[++buttonCount] = button4;
 
@@ -109,7 +121,7 @@ void AudioControls::Tick()
   display.Tick();
 }
 
-void AudioControls::UpdateDynamicEncoder(int encoder)
+void AudioControls::UpdateDynamicEncoder(int encoder, int increment)
 {
   int i = encoder - 1;
   // Update the encoder value based on the current midi state
@@ -117,35 +129,35 @@ void AudioControls::UpdateDynamicEncoder(int encoder)
   {
   case AudioControlMode::ModeGlobal:
     if (i != 3) return; // To keep volume controls, only the last encoder can change the global program
-    encoderGlobalProgram[i] = SelectNextProgram(encoderGlobalProgram[i], globalPrograms, sizeof(globalPrograms) / sizeof(int));
+    encoderGlobalProgram[i] = SelectNextProgram(encoderGlobalProgram[i], increment, globalPrograms, sizeof(globalPrograms) / sizeof(int));
     sprintf(textBuffer, "%s %s", GetMidiChannelName(GLOBAL_MIDI_CHAN), GetMidiControlName(encoderGlobalProgram[i]));
     display.WriteText(textBuffer);
     break;
   case AudioControlMode::ModeDrum:
-    encoderDrumProgram[i] = SelectNextProgram(encoderDrumProgram[i], drum808Programs, sizeof(drum808Programs) / sizeof(int));
+    encoderDrumProgram[i] = SelectNextProgram(encoderDrumProgram[i], increment, drum808Programs, sizeof(drum808Programs) / sizeof(int));
     sprintf(textBuffer, "%s %s", GetMidiChannelName(DRUM_MIDI_CHAN), GetMidiControlName(encoderDrumProgram[i]));
     display.WriteText(textBuffer);
     break;
   case AudioControlMode::ModeSynth1:
-    encoderSynth1Program[i] = SelectNextProgram(encoderSynth1Program[i], synth303Programs, sizeof(synth303Programs) / sizeof(int));
+    encoderSynth1Program[i] = SelectNextProgram(encoderSynth1Program[i], increment, synth303Programs, sizeof(synth303Programs) / sizeof(int));
     sprintf(textBuffer, "%s %s", GetMidiChannelName(SYNTH1_MIDI_CHAN), GetMidiControlName(encoderSynth1Program[i]));
     display.WriteText(textBuffer);
     break;    
   case AudioControlMode::ModeSynth2:
-    encoderSynth2Program[i] = SelectNextProgram(encoderSynth2Program[i], synth303Programs, sizeof(synth303Programs) / sizeof(int));
+    encoderSynth2Program[i] = SelectNextProgram(encoderSynth2Program[i], increment, synth303Programs, sizeof(synth303Programs) / sizeof(int));
     sprintf(textBuffer, "%s %s", GetMidiChannelName(SYNTH2_MIDI_CHAN), GetMidiControlName(encoderSynth2Program[i]));
     display.WriteText(textBuffer);
     break;
   }
 }
 
-int AudioControls::SelectNextProgram(int currentProgram, const int *programs, int programCount)
+int AudioControls::SelectNextProgram(int currentProgram, int increment, const int *programs, int programCount)
 {  
   for (int i = 0; i < programCount; i++)
   {
     if (currentProgram == programs[i])
     {
-      return programs[(i + 1) % programCount];
+      return programs[(i + increment) % programCount];
     }
   }
   return programs[0];
