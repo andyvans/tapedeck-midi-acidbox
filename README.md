@@ -16,4 +16,4 @@ This includes two ESP32 S3 boards:
 
 ## Demo
 
-[![Video](https://img.youtube.com/vi/i5UVzaoIb8w/0.jpg)](https://www.youtube.com/watch?v=i5UVzaoIb8w)
+[![Video](https://img.youtube.com/vi/i5UVzaoIb8w/maxresdefault.jpg)](https://www.youtube.com/watch?v=i5UVzaoIb8w)
