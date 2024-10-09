@@ -14,6 +14,6 @@ This includes two ESP32 S3 boards:
 
 - One analyses the audio using FFT and displays the results on an 12x4 RGB matrix. In addition it controls LEDS, OLED, original analog VU meters and rotary encoders. It also sends MIDI commands to the music generator.
 
-## Demo
+## Watch demo on YouTube
 
 [![Video](https://img.youtube.com/vi/i5UVzaoIb8w/maxresdefault.jpg)](https://www.youtube.com/watch?v=i5UVzaoIb8w)
