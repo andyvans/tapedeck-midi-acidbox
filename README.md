@@ -1,6 +1,6 @@
 # 1971 Technics tape deck with machine generated music & RGB graphics
 
-This project takes a 1971 Technics RS-273US tape deck and removes almost all the electronics and replaces it with more modern tech. At the heart is an ESP32 S3 board that generates music using AcidBox - an ESP32 headless acid combo of tb303 + tb303 + tr808 like synthesizers.
+This project takes a 1971 Technics RS-273US tape deck and removes almost all the electronics and replaces it with more modern tech. At the heart is an ESP32 S3 board that generates music using AcidBox - an ESP32 headless acid combo of tb303 + tb303 + tr808 like synthesizers. A second ESP32 S3 board analyses the audio and displays the graphics and sends MIDI commands to the AcidBox.
 
 ## What was done
 
