@@ -1,3 +1,13 @@
+```
+                                          .------------------------.  
+               _     _ ____               |\\////////       90 min |  
+     /\       (_)   | |  _ \              | \/  __  ______  __     |
+    /  \   ___ _  __| | |_) | _____  __   |    /  \|\.....|/  \    |
+   / /\ \ / __| |/ _` |  _ < / _ \ \/ /   |    \__/|/_____|\__/    |   
+  / ____ \ (__| | (_| | |_) | (_) >  <    | A                      |    
+ /_/    \_\___|_|\__,_|____/ \___/_/\_\   |    ________________    | 
+                                          |___/_._o________o_._\___|
+```
 # 1971 Technics tape deck with machine generated music & RGB graphics
 
 This project takes a 1971 Technics RS-273US tape deck and removes almost all the electronics and replaces it with more modern tech.
