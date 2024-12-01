@@ -12,6 +12,8 @@
 
 This project takes a 1971 Technics RS-273US tape deck and removes almost all the electronics and replaces it with more modern tech.
 
+[https://www.codify.nz/acidbox-tape-deck/](https://www.codify.nz/acidbox-tape-deck/)
+
 ## How it works
 
 - The motors have been removed, the potentiometers have been replaced with rotary encoders.
