@@ -51,8 +51,9 @@ The ESP32 S3 boards perform two functions:
 
 [Copych](https://github.com/copych) has done a really great job pulling together code from various sources to refine and create [AcidBox](https://github.com/andyvans/AcidBox).
 
-## Watch demo on YouTube
+## Watch demos on YouTube
 
+[![Video](https://img.youtube.com/vi/xVrBWS9A8RA/maxresdefault.jpg)](https://www.youtube.com/watch?v=xVrBWS9A8RA)
 [![Video](https://img.youtube.com/vi/i5UVzaoIb8w/maxresdefault.jpg)](https://www.youtube.com/watch?v=i5UVzaoIb8w)
 
 ## Inside
