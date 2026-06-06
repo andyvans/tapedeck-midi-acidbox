@@ -22,18 +22,19 @@ struct EncoderPositionState {
 
 class OneRotaryEncoder {
 public:
-    OneRotaryEncoder(int pinA, int pinB, int initialValue, int minValue, int maxValue);
-    OneRotaryEncoder(int pinA, int pinB, int pinSwitch, int initialValue, int minValue, int maxValue);
+    OneRotaryEncoder(int pinA, int pinB);
+    OneRotaryEncoder(int pinA, int pinB, int pinSwitch);
+    void SetRange(int minValue, int maxValue, int clicksPerValue, int initialValue);
     void Tick();
     void SetPosition(int position);
     EncoderPositionState GetPosition();
     EncoderSwitchState GetSwitchState();
 
 private:
-    OneButton button;
-    RotaryEncoder encoder;
+    OneButton* button;
+    RotaryEncoder* encoder;
 
-    int lastPosition = -1;    
+    int lastPosition = -1;
     EncoderSwitchPress switchState = EncoderSwitchPress::None;
 
     bool hasNewSwitchState = false;
@@ -44,8 +45,9 @@ private:
     void LongPressed();
     int CalculateAcceleration(int oldPos, int newPos);
 
-    int rotarySteps = 8;
-    int rotaryInitial = 64;
+    int rotarySteps = 1;
+    int rotaryInitial = 0;
     int rotaryMin = 0;
     int rotaryMax = 128;
+    long lastRawPosition = 0;
 };

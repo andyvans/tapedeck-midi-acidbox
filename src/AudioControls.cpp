@@ -79,19 +79,23 @@ AudioControls::AudioControls()
   buttons[++buttonCount] = button4;
 
   // Encoder 1
-  auto encoder1 = new OneRotaryEncoder(ROTARY_ENCODER_1_A_PIN, ROTARY_ENCODER_1_B_PIN, 64, 0, 127);
+  auto encoder1 = new OneRotaryEncoder(ROTARY_ENCODER_1_A_PIN, ROTARY_ENCODER_1_B_PIN);
+  encoder1->SetRange(0, 127, 8, 64);
   encoders[++encoderCount] = encoder1;
 
   // Encoder 2
-  auto encoder2 = new OneRotaryEncoder(ROTARY_ENCODER_2_A_PIN, ROTARY_ENCODER_2_B_PIN, 64, 0, 127);
+  auto encoder2 = new OneRotaryEncoder(ROTARY_ENCODER_2_A_PIN, ROTARY_ENCODER_2_B_PIN);
+  encoder2->SetRange(0, 127, 8, 64);
   encoders[++encoderCount] = encoder2;
 
   // Encoder 3
-  auto encoder3 = new OneRotaryEncoder(ROTARY_ENCODER_3_A_PIN, ROTARY_ENCODER_3_B_PIN, 64, 0, 127);
+  auto encoder3 = new OneRotaryEncoder(ROTARY_ENCODER_3_A_PIN, ROTARY_ENCODER_3_B_PIN);
+  encoder3->SetRange(0, 127, 8, 64);
   encoders[++encoderCount] = encoder3;
 
   // Encoder 4 - initial value 0
-  auto encoder4 = new OneRotaryEncoder(ROTARY_ENCODER_4_A_PIN, ROTARY_ENCODER_4_B_PIN, 0, 0, 127);
+  auto encoder4 = new OneRotaryEncoder(ROTARY_ENCODER_4_A_PIN, ROTARY_ENCODER_4_B_PIN);
+  encoder4->SetRange(0, 127, 8, 0);
   encoders[++encoderCount] = encoder4;
 }
 
